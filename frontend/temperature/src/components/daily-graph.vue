@@ -1,6 +1,6 @@
 <template>
   <div class="graph-container">
-    <canvas id="weekly-graph"></canvas>
+    <canvas id="daily-graph"></canvas>
   </div>
 </template>
 
@@ -8,11 +8,13 @@
 import Chart from "chart.js/auto";
 
 export default {
-  name: "WeeklyGraph",
+  name: "DailyGraph",
 
   data: function () {
     return {
       data: [],
+      dailyData: [],
+      temps: [],
     };
   },
 
@@ -34,24 +36,40 @@ export default {
         .then((data) => data.replace(/'/g, '"'))
         .then((data) => JSON.parse(data))
         .then((data) => (this.data = data))
+        .then(() => this.setDailyData())
         .then(() => this.setTemps())
         .then(() => this.setLabels())
         .then(() => this.createGraph());
     },
 
     setTemps() {
-      let temps = [];
-
-      this.data.forEach((element) => {
-        temps.push(element[1]);
+      this.dailyData.forEach((element) => {
+        this.temps.push(element[1]);
       });
-      this.temps = temps;
+    },
+
+    setDailyData() {
+      this.data.forEach((element) => {
+        let date = new Date();
+        let day = date.getDate();
+        let month = date.getMonth() + 1;
+        if (month < 10) {
+          month = "0" + month;
+        }
+        let year = date.getFullYear();
+
+        let today = `${year}-${month}-${day}`;
+
+        if (today === element[2]) {
+          this.dailyData.push(element);
+        }
+      });
     },
 
     setLabels() {
       let labels = [];
 
-      this.data.forEach((element) => {
+      this.dailyData.forEach((element) => {
         let datetime = element[2] + " " + element[3];
         labels.push(datetime);
       });
@@ -59,7 +77,7 @@ export default {
     },
 
     createGraph() {
-      const ctx = document.getElementById("weekly-graph");
+      const ctx = document.getElementById("daily-graph");
 
       const labels = this.labels;
 
@@ -78,17 +96,17 @@ export default {
           ],
         },
         options: {
-           plugins: {
+            plugins: {
                 title: {
                     display: true,
-                    text: "Temperatuur deze week",
+                    text: "Temperatuur vandaag",
                     font: {
                         size: 32
                     }
                 }
             },
-          responsive: true,
-          maintainAspectRatio: false,
+            responsive: true,
+            maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: false,
