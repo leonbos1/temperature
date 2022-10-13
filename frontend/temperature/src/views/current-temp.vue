@@ -46,6 +46,11 @@ export default {
       if (month < 10) {
         month = "0" + month;
       }
+
+    if (day < 10) {
+      day = "0" + day;
+    }
+
       let year = date.getFullYear();
 
       let today = `${year}-${month}-${day}`;
@@ -83,10 +88,9 @@ export default {
         }
       });
 
-      this.avgToday = Math.round(totalTempToday / counterToday).toFixed(2);
-      this.avgyesterday = Math.round(
-        totalTempYesterday / counterYesterday
-      ).toFixed(2);
+
+      this.avgToday = (totalTempToday / counterToday).toFixed(2);
+      this.avgyesterday = (totalTempYesterday / counterYesterday).toFixed(2);
     },
   },
   beforeMount() {

@@ -53,14 +53,19 @@ export default {
         let date = new Date();
         let day = date.getDate();
         let month = date.getMonth() + 1;
+
         if (month < 10) {
           month = "0" + month;
+        }
+        if (day < 10) {
+          day = "0" + day;
         }
         let year = date.getFullYear();
 
         let today = `${year}-${month}-${day}`;
 
         if (today === element[2]) {
+          console.log("fghgh")
           this.dailyData.push(element);
         }
       });
@@ -96,17 +101,17 @@ export default {
           ],
         },
         options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Temperatuur vandaag",
-                    font: {
-                        size: 32
-                    }
-                }
+          plugins: {
+            title: {
+              display: true,
+              text: "Temperatuur vandaag",
+              font: {
+                size: 32,
+              },
             },
-            responsive: true,
-            maintainAspectRatio: false,
+          },
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: false,
@@ -122,7 +127,7 @@ export default {
 
 <style scoped>
 .graph-container {
-    width: 100%;
-    height: 60vh;
+  width: 100%;
+  height: 60vh;
 }
 </style>

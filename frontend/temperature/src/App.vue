@@ -1,28 +1,28 @@
 <template>
   <div class="container">
+
+      <ul>
+        <li><a class="active" href="/">Home</a></li>
+        <li><a href="/manage">Manage</a></li>
+        <li><a href="/extra">Extra</a></li>
+        <li><a href="/login">Login</a></li>
+      </ul>
+ 
     <div class="content">
-      <CurrentTemp />
-      <DailyGraph />
-      <WeeklyGraph />
-    <!--  <Manage/> -->
+      <router-view />
+  
     </div>
   </div>
 </template>
 
 
 <script>
-import CurrentTemp from "./components/current-temp.vue";
-import DailyGraph from "./components/daily-graph.vue";
-import WeeklyGraph from "./components/weekly-graph.vue";
-//import Manage from "./components/manage.vue"
+
 
 export default {
   name: "App",
   components: {
-    CurrentTemp,
-    DailyGraph,
-    WeeklyGraph,
-   // Manage
+
   },
 };
 </script>
@@ -34,7 +34,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0px;
 }
 
 .container {
@@ -58,10 +58,12 @@ export default {
 
 ul {
   list-style-type: none;
-  margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: #272727;
+  position: relative;
+  margin-top: 0;
+  
 }
 
 li {
@@ -72,7 +74,7 @@ li a {
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 16px;
+  padding: 18px 20px;
   text-decoration: none;
 }
 
@@ -81,6 +83,11 @@ li a:hover:not(.active) {
 }
 
 .active {
-  background-color: #00c58a;
+  background-color: #18b68e;
 }
+
+body, html {
+    margin:0;
+}
+
 </style>
