@@ -13,9 +13,10 @@
       <tbody>
         <tr v-for="d in data" v-bind:key="d">
           <td>{{ d.id }}</td>
-          <td>{{ d.temp }}</td>
+          <input type="text" v-model="d.temp" />
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
+          <button @click="editRecord(d.id, d.temp)" class="edit">Edit</button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
         </tr>
       </tbody>
@@ -71,6 +72,19 @@ export default {
         },
       }).then(() => this.getData());
     },
+
+    editRecord(id, temp) {
+      fetch(`http://ronleon.nl:5000/${id}`, {
+        method: "PUT",
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          degrees: temp+'',
+        }),
+      }).then(() => this.getData());
+    },
+
   },
 };
 </script>
@@ -100,7 +114,6 @@ th {
 }
 
 button {
-  background-color: #4CAF50; /* Green */
   border: none;
   color: white;
   padding: 4px 32px;
@@ -114,4 +127,8 @@ button {
 .delete {
   background-color: #f44336;
 }
+.edit {
+  background-color: #4caf50;
+}
+
 </style>
