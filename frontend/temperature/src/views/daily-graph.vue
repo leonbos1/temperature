@@ -65,7 +65,6 @@ export default {
         let today = `${year}-${month}-${day}`;
 
         if (today === element[2]) {
-          console.log("fghgh")
           this.dailyData.push(element);
         }
       });

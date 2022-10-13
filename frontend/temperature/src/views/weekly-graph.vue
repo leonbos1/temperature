@@ -36,24 +36,34 @@ export default {
         .then((data) => (this.data = data))
         .then(() => this.setTemps())
         .then(() => this.setLabels())
-        .then(() => this.createGraph());
+        .then(() => this.createGraph())
     },
 
     setTemps() {
       let temps = [];
+      let counter = 0;
 
       this.data.forEach((element) => {
-        temps.push(element[1]);
+        counter++;
+        if (counter > 30) {
+          temps.push(element[1]);
+          counter = 0;
+        }
       });
       this.temps = temps;
     },
 
     setLabels() {
       let labels = [];
+      let counter = 0;
 
       this.data.forEach((element) => {
-        let datetime = element[2] + " " + element[3];
-        labels.push(datetime);
+        counter++;
+        if (counter > 30) {
+          let datetime = element[2] + " " + element[3];
+          labels.push(datetime);
+          counter = 0;
+        }
       });
       this.labels = labels;
     },

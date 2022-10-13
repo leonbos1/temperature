@@ -1,7 +1,5 @@
 <template>
   <div class="table-container">
-    <button @click="getData()">Show data</button>
-    <button @click="hideData()">Hide data</button>
     <table>
       <thead>
         <tr>
@@ -29,6 +27,10 @@
 export default {
   name: "ManagePage",
 
+  mounted() {
+    this.getData();
+  },
+
   data: function () {
     return {
       data: [],
@@ -48,9 +50,6 @@ export default {
         .then((data) => this.showData(data));
     },
 
-    hideData() {
-      this.data = [];
-    },
 
     showData(data) {
       this.data = [];
@@ -99,8 +98,20 @@ th {
 .table-container tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+
+button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 4px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
 .delete {
-  width: 50px;
-  height: 20px;
+  background-color: #f44336;
 }
 </style>
