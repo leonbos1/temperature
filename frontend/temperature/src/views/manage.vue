@@ -58,7 +58,7 @@ export default {
         .then((allData) => JSON.parse(allData))
         .then((allData) => this.showData(allData))
         .then(()=>
-          this.data = this.allData.slice(0, 50)
+        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage)
         );
     },
 
@@ -86,7 +86,7 @@ export default {
     },
 
     prevPage() {
-      if (this.page > 0) {
+      if (this.page > 1) {
         this.page--;
         this.selectedData(this.page * this.perPage, this.page * this.perPage + this.perPage);
       }
@@ -165,7 +165,7 @@ div .page {
   align-items: center;
 
   button {
-    background-color: #4caf50;
+    background-color: #18b68e;
     margin-left: 1vw;
     margin-right: 1vw;
   }
