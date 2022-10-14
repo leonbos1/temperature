@@ -134,6 +134,10 @@ def weekly():
     except:
         return "unauthorized", 401
 
+@app.route('/test', methods=["GET"])
+def weekly():
+    return "yoyoyo test"
+
 
 app.run(host='192.168.178.220', debug=True)
 #test
