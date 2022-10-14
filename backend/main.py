@@ -134,10 +134,15 @@ def weekly():
     except:
         return "unauthorized", 401
 
-@app.route('/test', methods=["GET"])
-def test():
-    return "yoyoyo sdffghdrhrfh"
+@app.route('/login', methods=["POST"])
+def login():
+    input_json = request.get_json(force=True)
+    f = open("pw.txt","r")
+    password = f.readlines()[0]
 
+    if input_json['password'] == password:
+        return "ABHJ", 200
+    return "unauthorized", 401
 
 app.run(host='192.168.178.220', debug=True)
 #test
