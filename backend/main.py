@@ -135,4 +135,4 @@ def weekly():
         return "unauthorized", 401
 
 
-app.run(host='192.168.178.220', debug=False)
+app.run(host='192.168.178.220', debug=True)
