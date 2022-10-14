@@ -11,26 +11,83 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def index():
+    return "", 404
 
-    if request.headers['kaas'] == 'yoyokaas':
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
+@app.route('/<id>', methods=['DELETE'])
+def delete(id):
+    if request.headers['token'] == 'ABHJ':
+        conn = sqlite3.connect('data.db')
+        cur = conn.cursor()
+        cur.execute(f"DELETE FROM temperatures WHERE id = {id}")
+        conn.commit()
+        conn.close()
+        return "succes", 200
 
-        cur.execute("select * from temperatures")
-        result = json.dumps(cur.fetchall())
+    return "unauthorized", 401
 
-        con.close()
+@app.route('/',methods=['POST'])
+def post():
+    try:
+        input_json = request.get_json(force=True)
+        conn = sqlite3.connect('data.db')
+        cur = conn.cursor()
 
-        return result
+        temp = round(input_json['degrees'], 2)
+
+        date = datetime.date.today()
+        time = datetime.datetime.now().strftime("%H:%M:%S")
+
+        avgtemp = get_last_temp()
+
+        max_deviation = 1.5
+
+        if avgtemp + max_deviation < temp or avgtemp - max_deviation > temp:
+            cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
+            conn.commit()
+            conn.close()
+            return "succes", 200
+
+        return "unauthorized", 401
+
+    except:
+        return "unauthorized", 401
+
+def get_last_temp():
+    conn = sqlite3.connect('data.db')
+    cur = conn.cursor()
+    cur.execute("SELECT temperature FROM temperatures ORDER BY id DESC LIMIT 3")
+    
+    temps = cur.fetchall()
+    avg_temp = 0
+    for i in temps:
+        avg_temp += i[0]
+
+    avg_temp = round(avg_temp / len(temps), 2)
+    conn.close()
+    return avg_temp
+
+@app.route('/<id>', methods=['PUT'])
+def put(id):
+    if request.headers['token'] == 'ABHJ':
+        input_json = request.get_json(force=True)
+        conn = sqlite3.connect('data.db')
+        cur = conn.cursor()
+        cur.execute(f"UPDATE temperatures SET degrees = {input_json['degrees']} WHERE id = {id}")
+        conn.commit()
+        conn.close()
+        return "succes", 200
+
+    return "unauthorized", 401
 
 @app.route('/current_temp', methods=['GET'])
 def current_temp():
 
-    if request.headers['kaas'] == 'yoyokaas':
+    if request.headers['token'] == 'ABHJ':
         con = sqlite3.connect('data.db')
         cur = con.cursor()
 
         cur.execute("select * from temperatures order by id desc limit 5")
+
         result = json.dumps(cur.fetchall())
         result_json = json.loads(result)
 
@@ -43,37 +100,16 @@ def current_temp():
 
         return str(round(avg_temp/5,2))
 
-
-@app.route('/', methods=["POST"])
-def post():
-    input_json = request.get_json(force=True)
-
-    con = sqlite3.connect('data.db')
-    cur = con.cursor()
-
-    temp = round(input_json['degrees'], 2)
-
-    date = datetime.date.today()
-    time = datetime.datetime.now()
-    current_time = time.strftime("%H:%M:%S")
-
-    cur.execute(
-        f"insert into temperatures ('degrees', 'date', 'time') values ('{temp}','{date}','{current_time}')")
-
-    con.commit()
-
-    con.close()
-
-    return 'success'
-
+    return "unauthorized", 401
 
 @app.route('/weekly', methods=["GET"])
 def weekly():
-    if request.headers['kaas'] == 'yoyokaas':
+    if request.headers['token'] == 'ABHJ':
         con = sqlite3.connect('data.db')
         cur = con.cursor()
 
-        cur.execute("select * from temperatures")
+        cur.execute("select * from temperatures order by id asc limit 10500")
+
         result = json.dumps(cur.fetchall())
 
         con.close()
@@ -94,6 +130,8 @@ def weekly():
                 to_return.append(e)
         
         return json.dumps(str(to_return))
+    
+    return "unauthorized", 401
 
 
-app.run(host='192.168.178.69', debug=True)
+app.run(host='192.168.178.220', debug=False)
