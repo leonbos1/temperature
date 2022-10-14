@@ -28,35 +28,32 @@ def delete(id):
 
 @app.route('/',methods=['POST'])
 def post():
-    try:
-        input_json = request.get_json(force=True)
-        conn = sqlite3.connect('data.db')
-        cur = conn.cursor()
+    input_json = request.get_json(force=True)
+    conn = sqlite3.connect('data.db')
+    cur = conn.cursor()
 
-        temp = round(input_json['degrees'], 2)
+    temp = round(input_json['degrees'], 2)
 
-        date = datetime.date.today()
-        time = datetime.datetime.now().strftime("%H:%M:%S")
+    date = datetime.date.today()
+    time = datetime.datetime.now().strftime("%H:%M:%S")
 
-        avgtemp = get_last_temp()
+    avgtemp = get_last_temp()
 
-        max_deviation = 1.5
+    max_deviation = 1.5
 
-        if avgtemp + max_deviation < temp or avgtemp - max_deviation > temp:
-            
-            return "succes", 200
+    if avgtemp + max_deviation < temp or avgtemp - max_deviation > temp:
+        
+        return "succes", 200
 
-        else:
-            temp = avgtemp
+    else:
+        temp = avgtemp
+        
+    cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
+    conn.commit()
+    conn.close()
 
-        cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
-        conn.commit()
-        conn.close()
+    return "succes", 200
 
-        return "unauthorized", 401
-
-    except:
-        return "unauthorized", 401
 
 def get_last_temp():
     conn = sqlite3.connect('data.db')
