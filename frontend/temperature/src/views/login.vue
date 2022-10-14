@@ -1,8 +1,10 @@
 <template>
   <div class="container">
     <div class="login">
-      <input v-model="login" v-on:input="test" placeholder="Password" />
-      <button>Submit</button>
+      <form v-on:submit="loginMethod">
+        <input type="password" v-model="login" placeholder="Password" />
+        <button type="submit">Submit</button>
+      </form>
     </div>
   </div>
 </template>
@@ -20,10 +22,25 @@ export default {
   components: {},
 
   methods: {
-    test() {
-      if (this.login === "kaaspassword") {
-        localStorage.setItem("token", "ABHJ");
-      }
+    loginMethod(e) {
+      e.preventDefault();
+      fetch("http://ronleon.nl:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: this.login,
+        }),
+      })
+       // .then((response) => response.json())
+        .then((data) => data.text())
+        .then((data) => {
+          if (data == "ABHJ") {
+            localStorage.setItem("token", data);
+            this.$router.push("/manage");
+          }
+        });
     },
   },
 };

@@ -3,9 +3,10 @@
 
       <ul>
         <li><a class="active" href="/">Home</a></li>
-        <li><a href="/manage">Manage</a></li>
+        <li v-if="loggedIn"><a href="/manage">Manage</a></li>
         <li><a href="/extra">Extra</a></li>
-        <li><a href="/login">Login</a></li>
+        <li v-if="!loggedIn"><a href="/login">Login</a></li>
+        <li v-if="loggedIn" @click="logout"><a>Logout</a></li>
       </ul>
  
     <div class="content">
@@ -21,8 +22,27 @@
 
 export default {
   name: "App",
-  components: {
-
+  data: function () {
+    return {
+      loggedIn: false,
+    };
+  },
+  mounted() {
+    this.checkLogin();
+  },
+  methods: {
+    checkLogin() {
+      if (localStorage.getItem("token") == "ABHJ") {
+        this.loggedIn = true; 
+      }
+      else {
+        this.loggedIn = false;
+      }
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.loggedIn = false;
+    },
   },
 };
 </script>
