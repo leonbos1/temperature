@@ -43,10 +43,15 @@ def post():
         max_deviation = 1.5
 
         if avgtemp + max_deviation < temp or avgtemp - max_deviation > temp:
-            cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
-            conn.commit()
-            conn.close()
+            
             return "succes", 200
+
+        else:
+            temp = avgtemp
+
+        cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
+        conn.commit()
+        conn.close()
 
         return "unauthorized", 401
 
