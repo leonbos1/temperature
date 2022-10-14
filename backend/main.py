@@ -105,7 +105,7 @@ def current_temp():
 
 @app.route('/weekly', methods=["GET"])
 def weekly():
-    try:
+    #try:
         if request.headers['token'] == 'ABHJ':
             con = sqlite3.connect('data.db')
             cur = con.cursor()
@@ -132,7 +132,7 @@ def weekly():
                     to_return.append(e)
             
             return json.dumps(str(to_return))
-    except:
+    #except:
         return "unauthorized", 401
 
 
