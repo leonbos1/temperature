@@ -42,12 +42,16 @@ export default {
     setTemps() {
       let temps = [];
       let counter = 0;
+      let totalTemp = 0;
 
       this.data.forEach((element) => {
         counter++;
+        totalTemp += element[1];
+        
         if (counter > 30) {
-          temps.push(element[1]);
+          temps.push(totalTemp / counter);
           counter = 0;
+          totalTemp = 0;
         }
       });
       this.temps = temps;
