@@ -1,5 +1,10 @@
 <template>
   <div class="table-container">
+    <div class="page">
+      <button @click="prevPage">Previous</button>
+      <p>{{page}}</p>
+      <button @click="nextPage">Next</button>
+    </div> 
     <table>
       <thead>
         <tr>
@@ -34,7 +39,10 @@ export default {
 
   data: function () {
     return {
+      allData: [],
       data: [],
+      page: 1,
+      perPage: 50,
     };
   },
   methods: {
@@ -46,22 +54,42 @@ export default {
         },
       })
         .then((response) => response.json())
-        .then((data) => data.replace(/'/g, '"'))
-        .then((data) => JSON.parse(data))
-        .then((data) => this.showData(data));
+        .then((allData) => allData.replace(/'/g, '"'))
+        .then((allData) => JSON.parse(allData))
+        .then((allData) => this.showData(allData))
+        .then(()=>
+          this.data = this.allData.slice(0, 50)
+        );
     },
 
-
     showData(data) {
-      this.data = [];
+      this.allData = [];
       data.forEach((element) => {
         let newData = {};
         newData.id = element[0];
         newData.temp = element[1];
         newData.date = element[2];
         newData.time = element[3];
-        this.data.push(newData);
+        this.allData.push(newData);
       });
+    },
+
+    selectedData(firstIndex, secondIndex) {
+      this.data = this.allData.slice(firstIndex, secondIndex);
+    },
+
+    nextPage() {
+      if (this.page < this.allData.length / this.perPage) {
+        this.page++;
+        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
+      }
+    },
+
+    prevPage() {
+      if (this.page > 0) {
+        this.page--;
+        this.selectedData(this.page * this.perPage, this.page * this.perPage + this.perPage);
+      }
     },
 
     deleteRecord(id) {
@@ -90,7 +118,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 .table-container {
   overflow: auto;
   white-space: nowrap;
@@ -129,6 +157,18 @@ button {
 }
 .edit {
   background-color: #4caf50;
+}
+
+div .page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    background-color: #4caf50;
+    margin-left: 1vw;
+    margin-right: 1vw;
+  }
 }
 
 </style>
