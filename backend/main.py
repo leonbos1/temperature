@@ -136,7 +136,7 @@ def weekly():
 
 @app.route('/test', methods=["GET"])
 def test():
-    return "yoyoyo test"
+    return "yoyoyo sdffghdrhrfh"
 
 
 app.run(host='192.168.178.220', debug=True)
