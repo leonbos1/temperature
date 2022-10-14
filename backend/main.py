@@ -61,7 +61,7 @@ def post():
 def get_last_temp():
     conn = sqlite3.connect('data.db')
     cur = conn.cursor()
-    cur.execute("SELECT temperature FROM temperatures ORDER BY id DESC LIMIT 3")
+    cur.execute("SELECT degrees FROM temperatures ORDER BY id DESC LIMIT 3")
     
     temps = cur.fetchall()
     avg_temp = 0
