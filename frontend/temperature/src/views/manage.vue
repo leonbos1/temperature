@@ -50,7 +50,7 @@ export default {
       fetch("http://ronleon.nl:5000/weekly", {
         method: "GET",
         headers: {
-          kaas: "yoyokaas",
+          token: "ABHJ",
         },
       })
         .then((response) => response.json())

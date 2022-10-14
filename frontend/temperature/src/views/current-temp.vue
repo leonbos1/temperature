@@ -22,7 +22,7 @@ export default {
     getTemp() {
       fetch("http://ronleon.nl:5000/current_temp", {
         method: "GET",
-        headers: { kaas: "yoyokaas" },
+        headers: { token: "ABHJ" },
       })
         .then((response) => response.text())
         .then((data) => (this.currentTemp = data));
@@ -30,7 +30,7 @@ export default {
     getData() {
       fetch("http://ronleon.nl:5000/weekly", {
         method: "GET",
-        headers: { kaas: "yoyokaas" },
+        headers: { token: "ABHJ" },
       })
         .then((response) => response.json())
         .then((data) => data.replace(/'/g, '"'))
