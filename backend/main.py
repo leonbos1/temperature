@@ -135,7 +135,7 @@ def weekly():
         return "unauthorized", 401
 
 @app.route('/test', methods=["GET"])
-def weekly():
+def test():
     return "yoyoyo test"
 
 
