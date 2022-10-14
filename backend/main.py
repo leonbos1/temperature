@@ -18,7 +18,7 @@ def delete(id):
     if request.headers['token'] == 'ABHJ':
         conn = sqlite3.connect('data.db')
         cur = conn.cursor()
-        cur.execute(f"DELETE FROM temperatures WHERE id = {id}", id)
+        cur.execute(f"DELETE FROM temperatures WHERE id = {id}")
         conn.commit()
         conn.close()
         return "succes", 200
