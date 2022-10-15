@@ -201,10 +201,10 @@ class Visitor(Resource):
         t.close()
 
         f = open("visitors.txt","w")
-        f.write(int(visitors) + 1)
+        f.write(str(int(visitors) + 1))
         f.close()
 
-        return visitors + 1
+        return int(visitors) + 1
 
 api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
