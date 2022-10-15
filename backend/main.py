@@ -48,7 +48,7 @@ class Temperature(Resource):
     def get(self):
         return "", 404
 
-    def delete(self, id):
+    def delete(self):
         try:
             if request.headers['token'] == self.token:
                 input_json = request.get_json(force=True)
