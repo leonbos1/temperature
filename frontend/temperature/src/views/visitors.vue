@@ -20,12 +20,17 @@
   
     methods: {
         increaseVisitors() {
-            this.visitors++;
+            //post to api
+            fetch("http://ronleon.nl:5000/visitors", {
+                method: "POST",
+              })
+                .then((response) => response.json())
+                .then((data) => this.visitors = data)
         },
     },
  
-    beforeMount() {
-
+    mounted() {
+        this.increaseVisitors();
     },
   };
   </script>

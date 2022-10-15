@@ -195,7 +195,9 @@ def get_last_temp():
 
 class Visitor(Resource):
     def __init__(self):
-        self.visitors = 0
+        t = open("visitors.txt","r")
+        self.visitors = t.readlines()[0]
+        t.close()
 
     def get(self):
         return self.visitors
