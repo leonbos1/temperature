@@ -33,9 +33,10 @@ export default {
           password: this.login,
         }),
       })
-       // .then((response) => response.json())
-        .then((data) => data.text())
+        .then((response) => response.json())
+        //.then((data) => data.text())
         .then((data) => {
+          console.log(data)
           if (data == "ABHJ") {
             localStorage.setItem("token", data);
             this.$router.push("/manage");
