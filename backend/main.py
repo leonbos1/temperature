@@ -194,17 +194,20 @@ def get_last_temp():
     return avg_temp
 
 class Visitor(Resource):
-    def __init__(self):
-        t = open("visitors.txt","r")
-        self.visitors = t.readlines()[0]
-        t.close()
 
     def get(self):
         return self.visitors
 
     def post(self):
-        self.visitors += 1
-        return self.visitors
+        t = open("visitors.txt","r")
+        self.visitors = t.readlines()[0]
+        t.close()
+
+        f = open("visitors.txt","w")
+        f.write(str(int(self.visitors) + 1))
+        f.close()
+
+        return self.visitors + 1
 
 api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
