@@ -1,9 +1,11 @@
 <template>
   <div class="table-container">
     <div class="page">
+      <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
       <p>{{page}}</p>
       <button @click="nextPage">Next</button>
+      <button @click="lastPage">Last</button>
     </div> 
     <table>
       <thead>
@@ -89,6 +91,16 @@ export default {
         this.selectedData(this.page * this.perPage, this.page * this.perPage + this.perPage);
       }
     },
+    
+    firstPage() {
+      this.page = 1;
+      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
+    },
+
+    lastPage() {
+      this.page = Math.ceil(this.allData.length / this.perPage);
+      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
+    },
 
     deleteRecord(id) {
       fetch(`http://ronleon.nl:5000/`, {
@@ -168,6 +180,8 @@ div .page {
 
   button {
     background-color: #18b68e;
+  }
+  p {
     margin-left: 1vw;
     margin-right: 1vw;
   }
