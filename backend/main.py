@@ -201,7 +201,7 @@ class Visitor(Resource):
         t.close()
 
         f = open("visitors.txt","w")
-        f.write(str(int(visitors) + 1))
+        f.write(int(visitors) + 1)
         f.close()
 
         return visitors + 1
