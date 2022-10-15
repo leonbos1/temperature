@@ -200,14 +200,14 @@ class Visitor(Resource):
 
     def post(self):
         t = open("visitors.txt","r")
-        self.visitors = t.readlines()[0]
+        visitors = t.readlines()[0]
         t.close()
 
         f = open("visitors.txt","w")
-        f.write(str(int(self.visitors) + 1))
+        f.write(str(int(visitors) + 1))
         f.close()
 
-        return self.visitors + 1
+        return visitors + 1
 
 api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
