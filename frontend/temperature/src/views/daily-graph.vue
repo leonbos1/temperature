@@ -41,9 +41,21 @@ export default {
     },
 
     setTemps() {
+      let temps = [];
+      let counter = 0;
+      let totalTemp = 0;
+
       this.dailyData.forEach((element) => {
-        this.temps.push(element[1]);
+        counter++;
+        totalTemp += element[1];
+        
+        if (counter > 10) {
+          temps.push(totalTemp / counter);
+          counter = 0;
+          totalTemp = 0;
+        }
       });
+      this.temps = temps;
     },
 
     setDailyData() {
@@ -70,10 +82,15 @@ export default {
 
     setLabels() {
       let labels = [];
-
+      let counter = 0;
+    
       this.dailyData.forEach((element) => {
-        let datetime = element[2] + " " + element[3];
-        labels.push(datetime);
+        counter++;
+        if (counter > 10) {
+          let datetime = element[3];
+          labels.push(datetime);
+          counter = 0;
+        }
       });
       this.labels = labels;
     },
