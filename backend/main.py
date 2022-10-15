@@ -113,7 +113,7 @@ class Weekly(Resource):
                     if datetimeobj >= last_week:
                         to_return.append(e)
                 
-                return json.dumps(str(to_return))
+                return to_return, 200
         except:
             return "unauthorized", 401
 
@@ -143,7 +143,7 @@ class CurrentTemp(Resource):
                 for e in result_json:
                     avg_temp += e[1]
 
-                return str(round(avg_temp/5,2))
+                return round(avg_temp/5,2)
         except:
             return "unauthorized", 401
 

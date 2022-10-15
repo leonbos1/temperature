@@ -54,8 +54,6 @@ export default {
         },
       })
         .then((response) => response.json())
-        .then((allData) => allData.replace(/'/g, '"'))
-        .then((allData) => JSON.parse(allData))
         .then((allData) => this.showData(allData))
         .then(()=>
         this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage)

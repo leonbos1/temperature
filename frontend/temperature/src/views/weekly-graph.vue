@@ -31,8 +31,6 @@ export default {
         headers: { token: "ABHJ" },
       })
         .then((response) => response.json())
-        .then((data) => data.replace(/'/g, '"'))
-        .then((data) => JSON.parse(data))
         .then((data) => (this.data = data))
         .then(() => this.setTemps())
         .then(() => this.setLabels())
