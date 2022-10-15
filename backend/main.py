@@ -21,21 +21,6 @@ class Temperature(Resource):
         f.close()
         t.close()
         
-    def get(self):
-        return "", 404
-
-    def delete(self, id):
-        try:
-            if request.headers['token'] == self.token:
-                conn = sqlite3.connect('data.db')
-                cur = conn.cursor()
-                cur.execute(f"DELETE FROM temperatures WHERE id = {id}")
-                conn.commit()
-                conn.close()
-                return "succes", 200
-        except:
-            return "unauthorized", 401
-
     def post(self):
         input_json = request.get_json(force=True)
         conn = sqlite3.connect('data.db')
@@ -59,6 +44,23 @@ class Temperature(Resource):
         conn.close()
 
         return "succes", 200
+        
+    def get(self):
+        return "", 404
+
+    def delete(self, id):
+        try:
+            if request.headers['token'] == self.token:
+                conn = sqlite3.connect('data.db')
+                cur = conn.cursor()
+                cur.execute(f"DELETE FROM temperatures WHERE id = {id}")
+                conn.commit()
+                conn.close()
+                return "succes", 200
+        except:
+            return "unauthorized", 401
+
+
 
     def put(self, id):
         if request.headers['token'] == self.token:
@@ -72,13 +74,23 @@ class Temperature(Resource):
 
         return "unauthorized", 401
 
-    #@app.route('/login', methods=["POST"])
-    def login(self):
-        input_json = request.get_json(force=True)
-        
 
+class Login(Resource):
+    def __init__(self):
+        f = open("pw.txt","r")
+        t = open("token.txt","r")
+        self.password = f.readlines()[0]
+        self.token = t.readlines()[0]
+        f.close()
+        t.close()
+        
+    #@app.route('/login', methods=["POST"])
+    def post(self):
+        
+        input_json = request.get_json(force=True)
         if input_json['password'] == self.password:
-            return self.token, 200
+            return self.token
+        
         return "unauthorized", 401
 
 
@@ -113,9 +125,33 @@ class Weekly(Resource):
                     if datetimeobj >= last_week:
                         to_return.append(e)
                 
-                return json.dumps(str(to_return))
+                return to_return, 200
         except:
             return "unauthorized", 401
+    
+    def post(self):
+        input_json = request.get_json(force=True)
+        conn = sqlite3.connect('data.db')
+        cur = conn.cursor()
+
+        temp = round(input_json['degrees'], 2)
+
+        date = datetime.date.today()
+        time = datetime.datetime.now().strftime("%H:%M:%S")
+
+        avgtemp = get_last_temp()
+
+        max_deviation = 1.5
+
+        if temp > avgtemp + max_deviation or temp < avgtemp - max_deviation:
+            
+            temp = avgtemp
+            
+        cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
+        conn.commit()
+        conn.close()
+
+        return "succes", 200
 
 class CurrentTemp(Resource):
 
@@ -129,7 +165,7 @@ class CurrentTemp(Resource):
         f.close()
         t.close()
 
-    def current_temp(self):
+    def get(self):
         try:
             if request.headers['token'] == self.token:
 
@@ -143,7 +179,7 @@ class CurrentTemp(Resource):
                 for e in result_json:
                     avg_temp += e[1]
 
-                return str(round(avg_temp/5,2))
+                return round(avg_temp/5,2)
         except:
             return "unauthorized", 401
 
@@ -162,11 +198,12 @@ def get_last_temp():
     conn.close()
     return avg_temp
 
-api.add_resource(Temperature, "/<int:id>")
+api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
+api.add_resource(Login, "/login")
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.178.220', debug=True)
+    app.run(host='192.168.178.220', debug=True, threaded=True)
 #test
