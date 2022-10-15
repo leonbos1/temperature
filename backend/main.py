@@ -193,10 +193,22 @@ def get_last_temp():
     conn.close()
     return avg_temp
 
+class Visitor(Resource):
+    def __init__(self):
+        self.visitors = 0
+
+    def get(self):
+        return self.visitors
+
+    def post(self):
+        self.visitors += 1
+        return self.visitors
+
 api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
+api.add_resource(Visitor, "/visitors")
 
 
 if __name__ == "__main__":

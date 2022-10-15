@@ -187,4 +187,11 @@ div .page {
   }
 }
 
+th {
+  text-align: center;
+}
+
+input {
+  text-align: center;
+}
 </style>
