@@ -1,7 +1,7 @@
 <template>
     <div class="container">
 
-        <h1>{{visitors}} visitors today</h1>
+        <h1>This website has {{visitors}} clicks</h1>
 
     </div>
   </template>
