@@ -51,25 +51,20 @@ class Temperature(Resource):
     def delete(self, id):
         try:
             if request.headers['token'] == self.token:
-                conn = sqlite3.connect('data.db')
-                cur = conn.cursor()
-                cur.execute(f"DELETE FROM temperatures WHERE id = {id}")
-                conn.commit()
-                conn.close()
+                input_json = request.get_json(force=True)
+                self.cur.execute(f"DELETE FROM temperatures WHERE id = {input_json['id']}")
+                self.conn.commit()
                 return "succes", 200
         except:
             return "unauthorized", 401
 
 
 
-    def put(self, id):
+    def put(self):
         if request.headers['token'] == self.token:
             input_json = request.get_json(force=True)
-            conn = sqlite3.connect('data.db')
-            cur = conn.cursor()
-            cur.execute(f"UPDATE temperatures SET degrees = {input_json['degrees']} WHERE id = {id}")
-            conn.commit()
-            conn.close()
+            self.cur.execute(f"UPDATE temperatures SET degrees = {input_json['degrees']} WHERE id = {input_json['id']}")
+            self.conn.commit()
             return "succes", 200
 
         return "unauthorized", 401
@@ -205,5 +200,4 @@ api.add_resource(Login, "/login")
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.178.220', debug=True, threaded=True)
-#test
+    app.run(host='192.168.178.220',port=5000, debug=True, threaded=True)

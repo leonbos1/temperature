@@ -91,22 +91,26 @@ export default {
     },
 
     deleteRecord(id) {
-      fetch(`http://ronleon.nl:5000/${id}`, {
+      fetch(`http://ronleon.nl:5000/`, {
         method: "DELETE",
         headers: {
           token: localStorage.getItem("token"),
         },
+        body: JSON.stringify({
+          id: id,
+        }),
       }).then(() => this.getData());
     },
 
     editRecord(id, temp) {
-      fetch(`http://ronleon.nl:5000/${id}`, {
+      fetch(`http://ronleon.nl:5000/`, {
         method: "PUT",
         headers: {
           token: localStorage.getItem("token"),
         },
         body: JSON.stringify({
-          degrees: temp+'',
+          id: id,
+          degrees: temp+''
         }),
       }).then(() => this.getData());
     },
