@@ -32,15 +32,15 @@ class Temperature(Resource):
         date = datetime.date.today()
         time = datetime.datetime.now().strftime("%H:%M:%S")
 
-        avgtemp = get_last_temp()
+        #avgtemp = get_last_temp()
 
-        max_deviation = 1.5
+        #max_deviation = 1.5
 
-        if (temp > avgtemp + max_deviation or temp < avgtemp - max_deviation) and self.sensor_fails < 3:
-            self.sensor_fails += 1
-            temp = avgtemp
-        else:
-            self.sensor_fails = 0
+        #if (temp > avgtemp + max_deviation or temp < avgtemp - max_deviation) and self.sensor_fails < 3:
+        #    self.sensor_fails += 1
+        #    temp = avgtemp
+        #else:
+        #    self.sensor_fails = 0
             
         cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
         conn.commit()
