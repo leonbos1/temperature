@@ -67,7 +67,7 @@ class Temperature(Resource):
         try:
             if request.headers['token'] == self.token:
                 input_json = request.get_json(force=True)
-                self.cur.execute(f"UPDATE temperatures SET degrees = {round(input_json['degrees'],2)} WHERE id = {input_json['id']}")
+                self.cur.execute(f"UPDATE temperatures SET degrees = {round(float(input_json['degrees']),2)} WHERE id = {input_json['id']}")
                 self.conn.commit()
                 return "succes", 200
 
