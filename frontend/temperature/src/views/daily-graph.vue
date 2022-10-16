@@ -30,7 +30,7 @@ export default {
     getData() {
       fetch("http://ronleon.nl:5000/weekly", {
         method: "GET",
-        headers: { token: "ABHJ" },
+        headers: { token: localStorage.getItem("token")},
       })
         .then((response) => response.json())
         .then((data) => (this.data = data))

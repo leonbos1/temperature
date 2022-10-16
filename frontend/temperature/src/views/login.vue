@@ -36,11 +36,8 @@ export default {
         .then((response) => response.json())
         //.then((data) => data.text())
         .then((data) => {
-          console.log(data)
-          if (data == "ABHJ") {
-            localStorage.setItem("token", data);
-            this.$router.push("/manage");
-          }
+          localStorage.setItem("token", data);
+          this.$router.push("/manage");
         });
     },
   },
