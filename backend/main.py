@@ -20,6 +20,7 @@ class Temperature(Resource):
         self.token = t.readlines()[0]
         f.close()
         t.close()
+        self.sensor_fails = 0
         
     def post(self):
         input_json = request.get_json(force=True)
@@ -35,9 +36,11 @@ class Temperature(Resource):
 
         max_deviation = 1.5
 
-        if temp > avgtemp + max_deviation or temp < avgtemp - max_deviation:
-            
+        if (temp > avgtemp + max_deviation or temp < avgtemp - max_deviation) and self.sensor_fails < 3:
+            self.sensor_fails += 1
             temp = avgtemp
+        else:
+            self.sensor_fails = 0
             
         cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
         conn.commit()
