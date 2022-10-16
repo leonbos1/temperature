@@ -52,7 +52,7 @@ export default {
       fetch("http://ronleon.nl:5000/weekly", {
         method: "GET",
         headers: {
-          token: "ABHJ",
+          token: localStorage.getItem("token"),
         },
       })
         .then((response) => response.json())

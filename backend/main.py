@@ -61,13 +61,16 @@ class Temperature(Resource):
 
 
     def put(self):
-        if request.headers['token'] == self.token:
-            input_json = request.get_json(force=True)
-            self.cur.execute(f"UPDATE temperatures SET degrees = {input_json['degrees']} WHERE id = {input_json['id']}")
-            self.conn.commit()
-            return "succes", 200
+        try:
+            if request.headers['token'] == self.token:
+                input_json = request.get_json(force=True)
+                self.cur.execute(f"UPDATE temperatures SET degrees = {input_json['degrees']} WHERE id = {input_json['id']}")
+                self.conn.commit()
+                return "succes", 200
 
-        return "unauthorized", 401
+            return "unauthorized", 401
+        except:
+            return "unauthorized", 401
 
 
 class Login(Resource):
@@ -101,28 +104,24 @@ class Weekly(Resource):
         t.close()
 
     def get(self):
-        try:
-            if request.headers['token'] == self.token:
+        self.cur.execute("select * from temperatures order by id asc limit 10500")
+        result = json.dumps(self.cur.fetchall())
 
-                self.cur.execute("select * from temperatures order by id asc limit 10500")
-                result = json.dumps(self.cur.fetchall())
+        result_json = json.loads(result)
+        today = datetime.datetime.now()
+        last_week = today - datetime.timedelta(days=7)
 
-                result_json = json.loads(result)
-                today = datetime.datetime.now()
-                last_week = today - datetime.timedelta(days=7)
+        to_return = []
 
-                to_return = []
+        for e in result_json:
+            datetime_string = e[2]
+            datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
+            
+            if datetimeobj >= last_week:
+                to_return.append(e)
+        
+        return to_return, 200
 
-                for e in result_json:
-                    datetime_string = e[2]
-                    datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-                    
-                    if datetimeobj >= last_week:
-                        to_return.append(e)
-                
-                return to_return, 200
-        except:
-            return "unauthorized", 401
     
     def post(self):
         input_json = request.get_json(force=True)
@@ -161,22 +160,17 @@ class CurrentTemp(Resource):
         t.close()
 
     def get(self):
-        try:
-            if request.headers['token'] == self.token:
+            self.cur.execute("select * from temperatures order by id desc limit 5")
 
-                self.cur.execute("select * from temperatures order by id desc limit 5")
+            result = json.dumps(self.cur.fetchall())
+            result_json = json.loads(result)
 
-                result = json.dumps(self.cur.fetchall())
-                result_json = json.loads(result)
+            avg_temp = 0
 
-                avg_temp = 0
+            for e in result_json:
+                avg_temp += e[1]
 
-                for e in result_json:
-                    avg_temp += e[1]
-
-                return round(avg_temp/5,2)
-        except:
-            return "unauthorized", 401
+            return round(avg_temp/5,2)
 
 
 def get_last_temp():
