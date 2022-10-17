@@ -70,5 +70,29 @@ export default {
 
 input {
   width: 80%;
+  height: 30px;
+  border-radius: 5px;
+  border-color: black;
+  border-style: solid;
+  border-width: 2px;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #18b68e;
+  border: none;
+  color: white;
+  padding: 8px 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 10px;
+  border-color: black;
+  border-style: solid;  
+  border-width: 2px;
+  
 }
 </style>
