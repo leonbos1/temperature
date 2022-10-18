@@ -5,10 +5,25 @@ import json
 import datetime
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api
+from sqlalchemy import *
+from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
+app.config['SECRET_KEY'] = 'secretkey'
+db = SQLAlchemy(app)
+
+class TemperatureModel(db.Model):
+    __tablename__ = 'temperatures'
+    id = db.Column(db.Integer, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+
 
 class Temperature(Resource):
     def __init__(self):
@@ -24,27 +39,15 @@ class Temperature(Resource):
         
     def post(self):
         input_json = request.get_json(force=True)
-        conn = sqlite3.connect('data.db')
-        cur = conn.cursor()
 
         temp = round(input_json['degrees'], 2)
 
         date = datetime.date.today()
         time = datetime.datetime.now().strftime("%H:%M:%S")
 
-        #avgtemp = get_last_temp()
-
-        #max_deviation = 1.5
-
-        #if (temp > avgtemp + max_deviation or temp < avgtemp - max_deviation) and self.sensor_fails < 3:
-        #    self.sensor_fails += 1
-        #    temp = avgtemp
-        #else:
-        #    self.sensor_fails = 0
-            
-        cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
-        conn.commit()
-        conn.close()
+        data = TemperatureModel(degrees=temp, date=date, time=time)
+        db.session.add(data)
+        db.session.commit()
 
         return "succes", 200
         
@@ -211,4 +214,4 @@ api.add_resource(Visitor, "/visitors")
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.178.220',port=5000, debug=True, threaded=True)
+    app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
