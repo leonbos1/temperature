@@ -70,13 +70,17 @@ class Temperature(Resource):
         try:
             if request.headers['token'] == self.token:
                 input_json = request.get_json(force=True)
-                self.cur.execute(f"UPDATE temperatures SET degrees = {round(float(input_json['degrees']),2)} WHERE id = {input_json['id']}")
-                self.conn.commit()
-                return "succes", 200
+                data = TemperatureModel.query.filter_by(id=input_json['id']).first()
+                if data is not None:
+                    data.degrees = input_json['degrees']
+                    db.session.commit()
+                    return "succes", 200
+                return "unauthorized", 401
 
             return "unauthorized", 401
         except:
             return "unauthorized", 401
+        
 
 
 class Login(Resource):
