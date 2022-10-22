@@ -1,13 +1,15 @@
 import json
-from flask import Flask, request
+from flask import Flask, request, jsonify, make_response
 import sqlite3
-import json
 import datetime
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api
 from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 import os
+from functools import wraps
+import jwt
+import bcrypt
 
 app = Flask(__name__)
 api = Api(app)
@@ -27,9 +29,64 @@ class TemperatureModel(db.Model):
 class UserModel(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String, unique=True)
     username = db.Column(db.String(20))
     password = db.Column(db.String(20))
     last_login = db.Column(db.String(20))
+
+class CurrentTempModel(db.Model):
+    __tablename__ = 'current_temp'
+    id = db.Column(db.Integer, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+
+class DailyAverageModel(db.Model):
+    __tablename__ = 'daily_average'
+    id = db.Column(db.Integer, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+
+class WeeklyAverageModel(db.Model):
+    __tablename__ = 'weekly_average'
+    id = db.Column(db.Integer, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+
+class MonthlyAverageModel(db.Model):
+    __tablename__ = 'monthly_average'
+    id = db.Column(db.Integer, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+    date = db.Column(db.String(20))
+    time = db.Column(db.String(20))
+
+def token_required(f):
+    """Decorator yo check token
+    """
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        global user
+        token = None
+        current_user = None
+
+        if 'x-access-tokens' in request.headers:
+            token = request.headers['x-access-tokens']
+
+        if not token:
+            return 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
+            user = current_user
+        except:
+            return 401
+
+        return f(current_user, *args, **kwargs)
+    return decorator
+
 
 
 class Temperature(Resource):
@@ -103,17 +160,24 @@ class Login(Resource):
     def post(self):
         
         input_json = request.get_json(force=True)
-        username = input_json['username']
-        password = input_json['password']
-        user = UserModel.query.filter_by(username=username).first()
-        if user is not None:
-            if user.password == password:
-                user.last_login = datetime.datetime.now().strftime("%H:%M:%S")
-                db.session.commit()
 
-                #TODO token generation 
-                return "Some token", 200
+        if self.v.validate(input_json):
+            username = input_json['username']
+            password = input_json['password']
+            user = UserModel.query.filter_by(username=username).first()
+            if user:
+                if bcrypt.checkpw(password.encode('utf-8'), user.password):
+                    token = jwt.encode({'public_id': user.public_id}, app.config['SECRET_KEY'], algorithm='HS256')
+                    return jsonify({'token': token, 'user': user.encode()})
 
+                if user.password == password:
+                    user.last_login = datetime.datetime.now().strftime("%H:%M:%S")
+                    db.session.commit()
+
+                    #TODO token generation 
+                    return "Some token", 200
+
+                return "unauthorized", 401
             return "unauthorized", 401
         return "unauthorized", 401
 
@@ -233,7 +297,6 @@ api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
-
 
 if __name__ == "__main__":
     app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
