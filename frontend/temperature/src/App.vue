@@ -3,6 +3,9 @@
 
       <ul>
         <li><a class="active" href="/">Home</a></li>
+        <li><a href="/daily">Daily</a></li>
+        <li><a href="/weekly">Weekly</a></li>
+        <li><a href="/monthly">Monthly</a></li>
         <li v-if="loggedIn"><a href="/manage">Manage</a></li>
         <li><a href="/extra">Extra</a></li>
         <li v-if="!loggedIn"><a href="/login">Login</a></li>
