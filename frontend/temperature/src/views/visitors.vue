@@ -7,6 +7,9 @@
   </template>
   
   <script>
+
+  import data from '../data.json'
+
   export default {
     name: "ExtraPage",
   
@@ -15,13 +18,14 @@
     data: function () {
       return {
         visitors: 0,
+        url: data['url'],
       };
     },
   
     methods: {
         increaseVisitors() {
             //post to api
-            fetch("http://ronleon.nl:5000/visitors", {
+            fetch(this.url + "/visitors", {
                 method: "POST",
               })
                 .then((response) => response.json())

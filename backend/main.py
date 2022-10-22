@@ -114,8 +114,10 @@ class Weekly(Resource):
         t.close()
 
     def get(self):
-        self.cur.execute("select * from temperatures order by id asc limit 10500")
-        result = json.dumps(self.cur.fetchall())
+        max_id = self.cur.execute("select * from temperatures order by id asc limit 10500").fetchall()[-1][0]
+        min_id = max_id - 10050
+        data = self.cur.execute(f"select * from temperatures where id > {min_id}").fetchall()
+        result = json.dumps(data)
 
         result_json = json.loads(result)
         today = datetime.datetime.now()

@@ -37,6 +37,7 @@ const routes = [
         name: 'Manage',
         component: Manage,
         beforeEnter: (_to,_from,next) => {
+            //TODO make this safe lol
             if (localStorage.getItem("token") === "ABHJ") {
                 next()
             }

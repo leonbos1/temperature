@@ -6,6 +6,7 @@
 
 <script>
 import Chart from "chart.js/auto";
+import datajson from "../data.json";
 
 export default {
   name: "DailyGraph",
@@ -15,6 +16,7 @@ export default {
       data: [],
       dailyData: [],
       temps: [],
+      url: datajson['url'],
     };
   },
 
@@ -28,7 +30,7 @@ export default {
 
   methods: {
     getData() {
-      fetch("http://ronleon.nl:5000/weekly", {
+      fetch(this.url + "/weekly", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })

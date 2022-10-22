@@ -2,8 +2,6 @@
   <div>
   <Visitors class="visitors"/>
   <CurrentTemp/>
-  <DailyGraph/>
-  <WeeklyGraph/>
   
   </div>
 </template>
@@ -11,8 +9,6 @@
 <script>
 
 import CurrentTemp from './current-temp.vue'
-import WeeklyGraph from './weekly-graph.vue'
-import DailyGraph from './daily-graph.vue'
 import Visitors from './visitors.vue';
 
 export default {
@@ -22,8 +18,6 @@ export default {
 
   components: {
     CurrentTemp,
-    DailyGraph,
-    WeeklyGraph,
     Visitors
 },
 };

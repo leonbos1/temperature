@@ -7,7 +7,11 @@
 </template>
 
 <script>
+
+import datajson from "../data.json";
+
 export default {
+
   name: "CurrentTemp",
 
   data: function () {
@@ -16,11 +20,13 @@ export default {
       avgToday: 0,
       avgyesterday: 0,
       data: [],
+      url: datajson['url'],
     };
   },
   methods: {
+
     getTemp() {
-      fetch("http://ronleon.nl:5000/current_temp", {
+      fetch(this.url + "/current_temp", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
@@ -28,7 +34,7 @@ export default {
         .then((data) => (this.currentTemp = data));
     },
     getData() {
-      fetch("http://ronleon.nl:5000/weekly", {
+      fetch(this.url + "/weekly", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
