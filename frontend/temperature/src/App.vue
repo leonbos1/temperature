@@ -8,8 +8,8 @@
         <li><a href="/monthly">Monthly</a></li>
         <li v-if="loggedIn"><a href="/manage">Manage</a></li>
         <li><a href="/extra">Extra</a></li>
-        <li v-if="!loggedIn"><a href="/login">Login</a></li>
-        <li v-if="loggedIn" @click="logout"><a>Logout</a></li>
+        <li class="right" v-if="!loggedIn"><a href="/login">Login</a></li>
+        <li class="right" v-if="loggedIn" @click="logout"><a>Logout</a></li>
       </ul>
  
     <div class="content">
@@ -113,4 +113,9 @@ body, html {
     margin:0;
 }
 
+.right {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
 </style>

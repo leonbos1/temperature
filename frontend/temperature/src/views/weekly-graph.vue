@@ -93,7 +93,7 @@ export default {
            plugins: {
                 title: {
                     display: true,
-                    text: "Temperatuur deze week",
+                    text: "Temperature this week",
                     font: {
                         size: 32
                     }

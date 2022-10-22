@@ -118,7 +118,7 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Temperatuur vandaag",
+              text: "Temperature today",
               font: {
                 size: 32,
               },
