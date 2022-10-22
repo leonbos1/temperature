@@ -117,6 +117,7 @@ export default {
         method: "DELETE",
         headers: {
           token: localStorage.getItem("token"),
+          'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,

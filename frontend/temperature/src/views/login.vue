@@ -2,7 +2,8 @@
   <div class="container">
     <div class="login">
       <form v-on:submit="loginMethod">
-        <input type="password" v-model="login" placeholder="Password" />
+        <input type="text" v-model="username" placeholder="Username" />
+        <input type="password" v-model="password" placeholder="Password" />
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -10,12 +11,15 @@
 </template>
 
 <script>
+import datajson from "../data.json";
 export default {
   name: "LoginPage",
 
   data: function () {
     return {
-      login: "",
+      username: "",
+      password: "",
+      url: datajson["url"],
     };
   },
 
@@ -24,19 +28,21 @@ export default {
   methods: {
     loginMethod(e) {
       e.preventDefault();
-      fetch("http://ronleon.nl:5000/login", {
+      fetch(this.url + "/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          password: this.login,
+          username: this.username,
+          password: this.password,
         }),
       })
         .then((response) => response.json())
         //.then((data) => data.text())
         .then((data) => {
-          localStorage.setItem("token", data);
+          localStorage.setItem("token", data["token"]);
+          localStorage.setItem("username", data["user"]);
           this.$router.push("/manage");
         });
     },
@@ -64,7 +70,7 @@ export default {
 }
 
 .container {
-  height: 200px;
+  height: 300px;
   position: relative;
 }
 

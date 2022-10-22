@@ -10,6 +10,8 @@ import os
 from functools import wraps
 import jwt
 import bcrypt
+import string
+import random
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,6 +19,7 @@ CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
 app.config['SECRET_KEY'] = 'secretkey'
+regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 db = SQLAlchemy(app)
 
 class TemperatureModel(db.Model):
@@ -83,7 +86,6 @@ def token_required(f):
             user = current_user
         except:
             return 401
-
         return f(current_user, *args, **kwargs)
     return decorator
 
@@ -127,18 +129,21 @@ class Temperature(Resource):
     def get(self):
         return "", 404
 
-    def delete(self):
-        try:
-            if request.headers['token'] == self.token:
-                input_json = request.get_json(force=True)
-                self.cur.execute(f"DELETE FROM temperatures WHERE id = {input_json['id']}")
-                self.conn.commit()
+    @token_required
+    def delete(self, current_user):
+        #try:
+            input_json = request.get_json(force=True)
+            id = input_json['id']
+            data = TemperatureModel.query.filter_by(id=id).first()
+            if data:
+                db.session.delete(data)
+                db.session.commit()
                 return "succes", 200
-        except:
+            return 404, "not found"
+        #except:
             return "unauthorized", 401
 
-
-
+    @token_required
     def put(self):
         try:
             if request.headers['token'] == self.token:
@@ -154,21 +159,34 @@ class Temperature(Resource):
         except:
             return "unauthorized", 401
         
+class User(Resource):
+    def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))
+
+    def post(self):
+        args = request.get_json(force=True)
+        data = UserModel(
+            public_id=self.id_generator(80),
+            username=args['username'],
+            password=bcrypt.hashpw(args['password'].encode('utf-8'), salt=bcrypt.gensalt()),
+        )
+        db.session.add(data)
+        db.session.commit()
+        return 200
 
 
 class Login(Resource):
     def post(self):
-        
-        input_json = request.get_json(force=True)
-
-        if self.v.validate(input_json):
+       # try:
+            input_json = request.get_json(force=True)
             username = input_json['username']
             password = input_json['password']
-            user = UserModel.query.filter_by(username=username).first()
+            user = UserModel.query.filter(UserModel.username==username).first()
+
             if user:
                 if bcrypt.checkpw(password.encode('utf-8'), user.password):
                     token = jwt.encode({'public_id': user.public_id}, app.config['SECRET_KEY'], algorithm='HS256')
-                    return jsonify({'token': token, 'user': user.encode()})
+                    return jsonify({'token': token, 'user': user.username})
 
                 if user.password == password:
                     user.last_login = datetime.datetime.now().strftime("%H:%M:%S")
@@ -178,9 +196,11 @@ class Login(Resource):
                     return "Some token", 200
 
                 return "unauthorized", 401
+            
             return "unauthorized", 401
-        return "unauthorized", 401
 
+        #except:
+         #   return "unauthorized", 401
 
 class Weekly(Resource):
     def __init__(self):
@@ -297,6 +317,9 @@ api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
+api.add_resource(User, "/create")
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
