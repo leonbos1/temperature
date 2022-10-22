@@ -24,6 +24,13 @@ class TemperatureModel(db.Model):
     date = db.Column(db.String(20))
     time = db.Column(db.String(20))
 
+class UserModel(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20))
+    password = db.Column(db.String(20))
+    last_login = db.Column(db.String(20))
+
 
 class Temperature(Resource):
     def __init__(self):
@@ -40,10 +47,19 @@ class Temperature(Resource):
     def post(self):
         input_json = request.get_json(force=True)
 
-        temp = round(input_json['degrees'], 2)
+        temp = round(float(input_json['degrees']), 2)
 
-        date = datetime.date.today()
-        time = datetime.datetime.now().strftime("%H:%M:%S")
+        #if json does not have date
+        if 'date' not in input_json or input_json['date'] == "":
+            date = datetime.date.today()
+        else:
+            date = input_json['date']
+
+        if 'time' not in input_json or input_json['time'] == "":
+            time = datetime.datetime.now().strftime("%H:%M:%S")
+        else:
+            time = input_json['time']
+
 
         data = TemperatureModel(degrees=temp, date=date, time=time)
         db.session.add(data)
@@ -84,21 +100,21 @@ class Temperature(Resource):
 
 
 class Login(Resource):
-    def __init__(self):
-        f = open("pw.txt","r")
-        t = open("token.txt","r")
-        self.password = f.readlines()[0]
-        self.token = t.readlines()[0]
-        f.close()
-        t.close()
-        
-    #@app.route('/login', methods=["POST"])
     def post(self):
         
         input_json = request.get_json(force=True)
-        if input_json['password'] == self.password:
-            return self.token
-        
+        username = input_json['username']
+        password = input_json['password']
+        user = UserModel.query.filter_by(username=username).first()
+        if user is not None:
+            if user.password == password:
+                user.last_login = datetime.datetime.now().strftime("%H:%M:%S")
+                db.session.commit()
+
+                #TODO token generation 
+                return "Some token", 200
+
+            return "unauthorized", 401
         return "unauthorized", 401
 
 

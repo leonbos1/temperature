@@ -26,12 +26,21 @@
           <button @click="editRecord(d.id, d.temp)" class="edit">Edit</button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
         </tr>
+        <tr>
+          <td></td>
+          <td><input type="text" v-model="newTemp" /></td>
+          <td><input type="text" v-model="newDate" /></td>
+          <td><input type="text" v-model="newTime" /></td>
+          <button @click="addRecord" class="add">Add</button>
+        </tr>
       </tbody>
     </table>
   </div>
 </template>
 
 <script>
+import datajson from "../data.json";
+
 export default {
   name: "ManagePage",
 
@@ -45,11 +54,12 @@ export default {
       data: [],
       page: 1,
       perPage: 50,
+      url: datajson["url"],
     };
   },
   methods: {
     getData() {
-      fetch("http://ronleon.nl:5000/weekly", {
+      fetch(this.url + "/weekly", {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
@@ -103,7 +113,7 @@ export default {
     },
 
     deleteRecord(id) {
-      fetch(`http://ronleon.nl:5000/`, {
+      fetch(this.url, {
         method: "DELETE",
         headers: {
           token: localStorage.getItem("token"),
@@ -115,7 +125,7 @@ export default {
     },
 
     editRecord(id, temp) {
-      fetch(`http://ronleon.nl:5000/`, {
+      fetch(this.url, {
         method: "PUT",
         headers: {
           token: localStorage.getItem("token"),
@@ -123,6 +133,20 @@ export default {
         body: JSON.stringify({
           id: id,
           degrees: temp+''
+        }),
+      }).then(() => this.getData());
+    },
+
+    addRecord() {
+      fetch(this.url, {
+        method: "POST",
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          degrees: this.newTemp,
+          date: this.newDate,
+          time: this.newTime,
         }),
       }).then(() => this.getData());
     },
@@ -173,6 +197,10 @@ button {
   background-color: #4caf50;
 }
 
+.add {
+  background-color: #2196f3;
+}
+
 div .page {
   display: flex;
   justify-content: center;
@@ -188,6 +216,10 @@ div .page {
 }
 
 th {
+  text-align: center;
+}
+
+td {
   text-align: center;
 }
 
