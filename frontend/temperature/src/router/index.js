@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Manage from '../views/manage.vue'
+import ManageTemps from '../views/manage_temps.vue'
+import ManageUsers from '../views/manage_users.vue'
 import Home from '../views/home.vue'
 import Login from '../views/login.vue'
 import Extra from '../views/extra.vue'
@@ -33,9 +34,23 @@ const routes = [
         component: Monthly
     },
     {
-        path: '/manage',
-        name: 'Manage',
-        component: Manage,
+        path: '/managetemps',
+        name: 'ManageTemps',
+        component: ManageTemps,
+        beforeEnter: (_to,_from,next) => {
+            //TODO make this safe lol
+            if (localStorage.getItem("token")) {
+                next()
+            }
+            else {
+                next("/login")
+            }
+        }
+    },
+    {
+        path: '/manageusers',
+        name: 'ManageUsers',
+        component: ManageUsers,
         beforeEnter: (_to,_from,next) => {
             //TODO make this safe lol
             if (localStorage.getItem("token")) {

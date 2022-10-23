@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-
       <ul>
         <li><a class="active" href="/">Home</a></li>
         <li><a href="/daily">Daily</a></li>
         <li><a href="/weekly">Weekly</a></li>
         <li><a href="/monthly">Monthly</a></li>
-        <li v-if="loggedIn"><a href="/manage">Manage</a></li>
+        <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
+        <li v-if="loggedIn"><a href="/manageusers">Manage users</a></li>
         <li><a href="/extra">Extra</a></li>
         <li class="right" v-if="!loggedIn"><a href="/login">Login</a></li>
         <li class="right" v-if="loggedIn" @click="logout"><a>Logout</a></li>
@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     checkLogin() {
-      if (localStorage.getItem("token") == "ABHJ") {
+      if (localStorage.getItem("token")) {
         this.loggedIn = true; 
       }
       else {

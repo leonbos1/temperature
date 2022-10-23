@@ -1,30 +1,22 @@
 <template>
   <div class="table-container">
-    <div class="page">
-      <button @click="firstPage">First</button>
-      <button @click="prevPage">Previous</button>
-      <p>{{page}}</p>
-      <button @click="nextPage">Next</button>
-      <button @click="lastPage">Last</button>
-    </div> 
+
     <table>
       <thead>
         <tr>
           <th scope="col">ID</th>
-          <th scope="col">Temp</th>
-          <th scope="col">Date</th>
-          <th scope="col">Time</th>
+          <th scope="col">Username</th>
+          <th scope="col">Last login</th>
           <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="d in data" v-bind:key="d">
-          <td>{{ d.id }}</td>
-          <input type="text" v-model="d.temp" />
-          <td>{{ d.date }}</td>
-          <td>{{ d.time }}</td>
-          <button @click="editRecord(d.id, d.temp)" class="edit">Edit</button>
-          <button @click="deleteRecord(d.id)" class="delete">Delete</button>
+        <tr v-for="user in data" v-bind:key="user">
+          <td>{{ user.id }}</td>
+          <input v-model="user.username"/>
+          <td>{{ user.last_login }}</td>
+          <button @click="editRecord(user.id, user.username)" class="edit">Edit</button>
+          <button @click="deleteRecord(user.id)" class="delete">Delete</button>
         </tr>
         <tr>
           <td></td>
@@ -41,6 +33,8 @@
 <script>
 import datajson from "../data.json";
 
+//TODO add a form to add password to an account when making a new one
+
 export default {
   name: "ManagePage",
 
@@ -50,73 +44,37 @@ export default {
 
   data: function () {
     return {
-      allData: [],
       data: [],
-      page: 1,
-      perPage: 50,
       url: datajson["url"],
     };
   },
   methods: {
     getData() {
-      fetch(this.url + "/weekly", {
+      fetch(this.url + "/user", {
         method: "GET",
         headers: {
-          token: localStorage.getItem("token"),
+          'x-access-tokens': localStorage.getItem("token"),
         },
       })
         .then((response) => response.json())
-        .then((allData) => this.showData(allData))
-        .then(()=>
-        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage)
-        );
+        .then((data) => this.showData(data))
     },
 
     showData(data) {
-      this.allData = [];
       data.forEach((element) => {
         let newData = {};
-        newData.id = element[0];
-        newData.temp = element[1];
-        newData.date = element[2];
-        newData.time = element[3];
-        this.allData.push(newData);
+        newData.id = element['id'];
+        newData.public_id = element['public_id'];
+        newData.username = element['username'];
+        newData.last_login = element['last_login'];
+        this.data.push(newData);
       });
     },
 
-    selectedData(firstIndex, secondIndex) {
-      this.data = this.allData.slice(firstIndex, secondIndex);
-    },
-
-    nextPage() {
-      if (this.page < this.allData.length / this.perPage) {
-        this.page++;
-        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
-      }
-    },
-
-    prevPage() {
-      if (this.page > 1) {
-        this.page--;
-        this.selectedData(this.page * this.perPage, this.page * this.perPage + this.perPage);
-      }
-    },
-    
-    firstPage() {
-      this.page = 1;
-      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
-    },
-
-    lastPage() {
-      this.page = Math.ceil(this.allData.length / this.perPage);
-      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
-    },
-
     deleteRecord(id) {
-      fetch(this.url, {
+      fetch(this.url+'user', {
         method: "DELETE",
         headers: {
-          token: localStorage.getItem("token"),
           'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
@@ -125,15 +83,15 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, temp) {
-      fetch(this.url, {
+    editRecord(id, username) {
+      fetch(this.url+'user', {
         method: "PUT",
         headers: {
-          token: localStorage.getItem("token"),
+          'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
-          degrees: temp+''
+          username: username
         }),
       }).then(() => this.getData());
     },
@@ -142,7 +100,7 @@ export default {
       fetch(this.url, {
         method: "POST",
         headers: {
-          token: localStorage.getItem("token"),
+          'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
           degrees: this.newTemp,

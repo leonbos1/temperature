@@ -1,9 +1,11 @@
+from cgitb import reset
 import json
+from math import degrees
 from flask import Flask, request, jsonify, make_response
 import sqlite3
 import datetime
 from flask_cors import CORS, cross_origin
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, marshal_with, fields
 from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -36,6 +38,20 @@ class UserModel(db.Model):
     username = db.Column(db.String(20))
     password = db.Column(db.String(20))
     last_login = db.Column(db.String(20))
+
+user_data = {
+    'id': fields.Integer,
+    'username': fields.String,
+    'last_login': fields.String
+}
+
+class SensorModel(db.Model):
+    __tablename__ = 'sensors'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    location = db.Column(db.String(20))
+    last_temp = db.Column(db.Float(precision=2))
+    last_send = db.Column(db.String(20))
 
 class CurrentTempModel(db.Model):
     __tablename__ = 'current_temp'
@@ -103,9 +119,10 @@ class Temperature(Resource):
         t.close()
         self.sensor_fails = 0
         
+    #@token_required add this when esp32 code is updated
     def post(self):
         input_json = request.get_json(force=True)
-
+ 
         temp = round(float(input_json['degrees']), 2)
 
         #if json does not have date
@@ -131,7 +148,7 @@ class Temperature(Resource):
 
     @token_required
     def delete(self, current_user):
-        #try:
+        try:
             input_json = request.get_json(force=True)
             id = input_json['id']
             data = TemperatureModel.query.filter_by(id=id).first()
@@ -140,22 +157,22 @@ class Temperature(Resource):
                 db.session.commit()
                 return "succes", 200
             return 404, "not found"
-        #except:
+        except:
             return "unauthorized", 401
 
     @token_required
-    def put(self):
+    def put(self, current_user):
         try:
-            if request.headers['token'] == self.token:
-                input_json = request.get_json(force=True)
-                data = TemperatureModel.query.filter_by(id=input_json['id']).first()
-                if data is not None:
-                    data.degrees = input_json['degrees']
-                    db.session.commit()
-                    return "succes", 200
-                return "unauthorized", 401
-
+            input_json = request.get_json(force=True)
+            id = input_json['id']
+            degrees = input_json['degrees']
+            data = TemperatureModel.query.filter_by(id=id).first()
+            if data:
+                data.degrees = degrees
+                db.session.commit()
+                return "succes", 200
             return "unauthorized", 401
+
         except:
             return "unauthorized", 401
         
@@ -163,7 +180,16 @@ class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
+    @marshal_with(user_data)
+    @token_required
+    def get(self, current_user):
+   
+        return UserModel.query.all()
+
+    #@token_required add this when first user is made in production
     def post(self):
+        """register user
+        """
         args = request.get_json(force=True)
         data = UserModel(
             public_id=self.id_generator(80),
@@ -174,6 +200,31 @@ class User(Resource):
         db.session.commit()
         return 200
 
+    @token_required
+    def delete(self, current_user):
+        input_json = request.get_json(force=True)
+        id = input_json['id']
+        result = UserModel.query.filter_by(id=id).first()
+        if result:
+            db.session.delete(result)
+            db.session.commit()
+            return "succes", 200
+        return "User not found", 404
+
+    @token_required
+    def put(self, current_user):
+        input_json = request.get_json(force=True)
+        id = input_json['id']
+        username = input_json['username']
+        password = input_json['password']
+        result = UserModel.query.filter_by(id=id).first()
+        if result:
+            result.username = username
+            result.password = password
+            db.session.commit()
+            return "succes", 200
+            
+        return "User not found", 404
 
 class Login(Resource):
     def post(self):
@@ -317,7 +368,7 @@ api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
-api.add_resource(User, "/create")
+api.add_resource(User, "/user")
 
 if __name__ == "__main__":
     with app.app_context():
