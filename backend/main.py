@@ -53,31 +53,13 @@ class SensorModel(db.Model):
     last_temp = db.Column(db.Float(precision=2))
     last_send = db.Column(db.String)
 
-class CurrentTempModel(db.Model):
-    __tablename__ = 'current_temp'
+class ExtraModel(db.Model):
+    __tablename__ = 'extra'
     id = db.Column(db.Integer, primary_key=True)
-    degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String)
-    time = db.Column(db.String)
-
-class DailyAverageModel(db.Model):
-    __tablename__ = 'daily_average'
-    id = db.Column(db.Integer, primary_key=True)
-    degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String)
-    time = db.Column(db.String)
-
-class WeeklyAverageModel(db.Model):
-    __tablename__ = 'weekly_average'
-    id = db.Column(db.Integer, primary_key=True)
-    degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String)
-    time = db.Column(db.String)
-
-class MonthlyAverageModel(db.Model):
-    __tablename__ = 'monthly_average'
-    id = db.Column(db.Integer, primary_key=True)
-    degrees = db.Column(db.Float(precision=2))
+    current_temp = db.Column(db.Float(precision=2))
+    daily_average = db.Column(db.Float(precision=2))
+    weekly_average = db.Column(db.Float(precision=2))
+    monthly_average = db.Column(db.Float(precision=2))
     date = db.Column(db.String)
     time = db.Column(db.String)
 
@@ -323,12 +305,7 @@ class CurrentTemp(Resource):
             result = json.dumps(self.cur.fetchall())
             result_json = json.loads(result)
 
-            avg_temp = 0
-
-            for e in result_json:
-                avg_temp += e[1]
-
-            return round(avg_temp/5,2)
+            return result_json, 200
 
 
 def get_last_temp():
@@ -358,12 +335,32 @@ class Visitor(Resource):
 
         return int(visitors) + 1
 
+class Extra(Resource):
+    def get(self):
+        result = ExtraModel.query.order_by(ExtraModel.id.desc()).first()
+        return result.to_json(), 200
+
+    def post(self):
+        input_json = request.get_json(force=True)
+        data = ExtraModel(
+            current_temp = input_json['current_temp'],
+            monthly_average = input_json['monthly_average'],
+            weekly_average=input_json['weekly_average'],
+            daily_average=input_json['daily_average'],
+            date=datetime.date.today(),
+            time=datetime.datetime.now().strftime("%H:%M:%S")
+        )
+        db.session.add(data)
+        db.session.commit()
+        return 200
+
 api.add_resource(Temperature, "/")
 api.add_resource(Weekly, "/weekly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")
+api.add_resource(Extra, "/extra")
 
 if __name__ == "__main__":
     with app.app_context():
