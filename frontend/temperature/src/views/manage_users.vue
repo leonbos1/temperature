@@ -6,6 +6,7 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Username</th>
+          <th scope="col">Password</th>
           <th scope="col">Last login</th>
           <th scope="col"></th>
         </tr>
@@ -13,16 +14,17 @@
       <tbody>
         <tr v-for="user in data" v-bind:key="user">
           <td>{{ user.id }}</td>
-          <input v-model="user.username"/>
+          <td><input v-model="user.username"/></td>
+          <td><input v-model="user.password"/></td>
           <td>{{ user.last_login }}</td>
-          <button @click="editRecord(user.id, user.username)" class="edit">Edit</button>
+          <button @click="editRecord(user.id, user.username, user.password)" class="edit">Edit</button>
           <button @click="deleteRecord(user.id)" class="delete">Delete</button>
         </tr>
         <tr>
           <td></td>
-          <td><input type="text" v-model="newTemp" /></td>
-          <td><input type="text" v-model="newDate" /></td>
-          <td><input type="text" v-model="newTime" /></td>
+          <td><input type="text" v-model="username" /></td>
+          <td><input type="text" v-model="password" /></td>
+          <td></td>
           <button @click="addRecord" class="add">Add</button>
         </tr>
       </tbody>
@@ -61,18 +63,20 @@ export default {
     },
 
     showData(data) {
+      this.data = [];
       data.forEach((element) => {
         let newData = {};
         newData.id = element['id'];
         newData.public_id = element['public_id'];
         newData.username = element['username'];
+        newData.password = element['password'];
         newData.last_login = element['last_login'];
         this.data.push(newData);
       });
     },
 
     deleteRecord(id) {
-      fetch(this.url+'user', {
+      fetch(this.url+'/user', {
         method: "DELETE",
         headers: {
           'x-access-tokens': localStorage.getItem("token"),
@@ -83,29 +87,29 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, username) {
-      fetch(this.url+'user', {
+    editRecord(id, username, password) {
+      fetch(this.url+'/user', {
         method: "PUT",
         headers: {
           'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
-          username: username
+          username: username,
+          password: password,
         }),
       }).then(() => this.getData());
     },
 
     addRecord() {
-      fetch(this.url, {
+      fetch(this.url+'/user', {
         method: "POST",
         headers: {
           'x-access-tokens': localStorage.getItem("token"),
         },
         body: JSON.stringify({
-          degrees: this.newTemp,
-          date: this.newDate,
-          time: this.newTime,
+          username: this.username,
+          password: this.password,
         }),
       }).then(() => this.getData());
     },

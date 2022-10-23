@@ -28,58 +28,58 @@ class TemperatureModel(db.Model):
     __tablename__ = 'temperatures'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(20))
+    date = db.Column(db.String)
+    time = db.Column(db.String)
 
 class UserModel(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String, unique=True)
-    username = db.Column(db.String(20))
-    password = db.Column(db.String(20))
-    last_login = db.Column(db.String(20))
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    last_login = db.Column(db.String)
 
 user_data = {
     'id': fields.Integer,
-    'username': fields.String,
+    'username': fields.String,	
     'last_login': fields.String
 }
 
 class SensorModel(db.Model):
     __tablename__ = 'sensors'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-    location = db.Column(db.String(20))
+    name = db.Column(db.String)
+    location = db.Column(db.String)
     last_temp = db.Column(db.Float(precision=2))
-    last_send = db.Column(db.String(20))
+    last_send = db.Column(db.String)
 
 class CurrentTempModel(db.Model):
     __tablename__ = 'current_temp'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(20))
+    date = db.Column(db.String)
+    time = db.Column(db.String)
 
 class DailyAverageModel(db.Model):
     __tablename__ = 'daily_average'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(20))
+    date = db.Column(db.String)
+    time = db.Column(db.String)
 
 class WeeklyAverageModel(db.Model):
     __tablename__ = 'weekly_average'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(20))
+    date = db.Column(db.String)
+    time = db.Column(db.String)
 
 class MonthlyAverageModel(db.Model):
     __tablename__ = 'monthly_average'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(20))
+    date = db.Column(db.String)
+    time = db.Column(db.String)
 
 def token_required(f):
     """Decorator yo check token
@@ -183,8 +183,9 @@ class User(Resource):
     @marshal_with(user_data)
     @token_required
     def get(self, current_user):
-   
-        return UserModel.query.all()
+        result = UserModel.query.all()
+
+        return result
 
     #@token_required add this when first user is made in production
     def post(self):
@@ -216,8 +217,10 @@ class User(Resource):
         input_json = request.get_json(force=True)
         id = input_json['id']
         username = input_json['username']
-        password = input_json['password']
+        password=bcrypt.hashpw(input_json['password'].encode('utf-8'), salt=bcrypt.gensalt())
+
         result = UserModel.query.filter_by(id=id).first()
+
         if result:
             result.username = username
             result.password = password
@@ -238,14 +241,6 @@ class Login(Resource):
                 if bcrypt.checkpw(password.encode('utf-8'), user.password):
                     token = jwt.encode({'public_id': user.public_id}, app.config['SECRET_KEY'], algorithm='HS256')
                     return jsonify({'token': token, 'user': user.username})
-
-                if user.password == password:
-                    user.last_login = datetime.datetime.now().strftime("%H:%M:%S")
-                    db.session.commit()
-
-                    #TODO token generation 
-                    return "Some token", 200
-
                 return "unauthorized", 401
             
             return "unauthorized", 401
