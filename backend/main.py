@@ -60,8 +60,20 @@ class ExtraModel(db.Model):
     daily_average = db.Column(db.Float(precision=2))
     weekly_average = db.Column(db.Float(precision=2))
     monthly_average = db.Column(db.Float(precision=2))
+    average_yesterday = db.Column(db.Float(precision=2))
     date = db.Column(db.String)
     time = db.Column(db.String)
+
+extra_data = {
+    'id': fields.Integer,
+    'current_temp': fields.Float,
+    'daily_average': fields.Float,
+    'weekly_average': fields.Float,
+    'monthly_average': fields.Float,
+    'average_yesterday': fields.Float,
+    'date': fields.String,
+    'time': fields.String
+}
 
 def token_required(f):
     """Decorator yo check token
@@ -336,9 +348,12 @@ class Visitor(Resource):
         return int(visitors) + 1
 
 class Extra(Resource):
+
+    @marshal_with(extra_data)
     def get(self):
         result = ExtraModel.query.order_by(ExtraModel.id.desc()).first()
-        return result.to_json(), 200
+        
+        return result, 200
 
     def post(self):
         input_json = request.get_json(force=True)
@@ -347,6 +362,7 @@ class Extra(Resource):
             monthly_average = input_json['monthly_average'],
             weekly_average=input_json['weekly_average'],
             daily_average=input_json['daily_average'],
+            average_yesterday=input_json['average_yesterday'],
             date=datetime.date.today(),
             time=datetime.datetime.now().strftime("%H:%M:%S")
         )

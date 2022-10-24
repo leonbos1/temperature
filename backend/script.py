@@ -1,3 +1,4 @@
+import datetime
 import requests
 import time
 
@@ -10,12 +11,14 @@ def main():
     weekly_average = get_weekly_average()
     daily_average = get_daily_average()
     current_temp = get_current_temp()
+    average_yesterday = get_average_yesterday()
 
     data = {
         "weekly_average":weekly_average,
-    "daily_average":daily_average,
-    "monthly_average":monthly_average,
-    "current_temp":current_temp
+        "daily_average":daily_average,
+        "monthly_average":monthly_average,
+        "current_temp":current_temp,
+        "average_yesterday":average_yesterday
     }
 
     add_to_db(data)
@@ -51,6 +54,22 @@ def get_daily_average():
 
     return round(average,2)
 
+def get_average_yesterday():
+    response = requests.get(url + "/weekly")
+    all_temps = []
+    reversed_response = response.json()[::-1]
+    today = reversed_response[0][2]
+    yesterday = datetime.datetime.strptime(today, '%Y-%m-%d') - datetime.timedelta(days=1)
+    yesterday = str(yesterday).split(" ")[0]
+
+    for temp in reversed_response:
+        if temp[2] != yesterday and temp[2] != today:
+            return round(sum(all_temps) / len(all_temps),2)
+        all_temps.append(temp[1])
+    average = sum(all_temps) / len(all_temps)
+
+    return round(average,2)
+
 def get_monthly_average():
     response = requests.get(url + "/weekly")
     all_temps = []
@@ -59,6 +78,8 @@ def get_monthly_average():
     average = sum(all_temps) / len(all_temps)
 
     return round(average,2)
+
+
 
 def add_to_db(data):
     response = requests.post(url+"/extra",json=data)
