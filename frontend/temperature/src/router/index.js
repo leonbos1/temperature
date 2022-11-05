@@ -1,12 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ManageTemps from '../views/manage_temps.vue'
-import ManageUsers from '../views/manage_users.vue'
+import Manage from '../views/manage.vue'
 import Home from '../views/home.vue'
 import Login from '../views/login.vue'
 import Extra from '../views/extra.vue'
-import Daily from '../views/daily-graph.vue'	
-import Weekly from '../views/weekly-graph.vue'	
-import Monthly from '../views/monthly-graph.vue'	
+
 const routes = [
     {
         path: '/',
@@ -19,41 +16,11 @@ const routes = [
         component: Extra
     },
     {
-        path: '/daily',
-        name: 'Daily',
-        component: Daily
-    },
-    {
-        path: '/weekly',
-        name: 'Weekly',
-        component: Weekly
-    },
-    {
-        path: '/monthly',
-        name: 'Monthly',
-        component: Monthly
-    },
-    {
-        path: '/managetemps',
-        name: 'ManageTemps',
-        component: ManageTemps,
+        path: '/manage',
+        name: 'Manage',
+        component: Manage,
         beforeEnter: (_to,_from,next) => {
-            //TODO make this safe lol
-            if (localStorage.getItem("token")) {
-                next()
-            }
-            else {
-                next("/login")
-            }
-        }
-    },
-    {
-        path: '/manageusers',
-        name: 'ManageUsers',
-        component: ManageUsers,
-        beforeEnter: (_to,_from,next) => {
-            //TODO make this safe lol
-            if (localStorage.getItem("token")) {
+            if (localStorage.getItem("token") === "ABHJ") {
                 next()
             }
             else {

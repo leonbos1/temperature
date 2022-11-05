@@ -2,8 +2,7 @@
   <div class="container">
     <div class="login">
       <form v-on:submit="loginMethod">
-        <input type="text" v-model="username" placeholder="Username" />
-        <input type="password" v-model="password" placeholder="Password" />
+        <input type="password" v-model="login" placeholder="Password" />
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -11,15 +10,12 @@
 </template>
 
 <script>
-import datajson from "../data.json";
 export default {
   name: "LoginPage",
 
   data: function () {
     return {
-      username: "",
-      password: "",
-      url: datajson["url"],
+      login: "",
     };
   },
 
@@ -28,21 +24,19 @@ export default {
   methods: {
     loginMethod(e) {
       e.preventDefault();
-      fetch(this.url + "/login", {
+      fetch("http://ronleon.nl:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: this.username,
-          password: this.password,
+          password: this.login,
         }),
       })
         .then((response) => response.json())
         //.then((data) => data.text())
         .then((data) => {
-          localStorage.setItem("token", data["token"]);
-          localStorage.setItem("username", data["user"]);
+          localStorage.setItem("token", data);
           this.$router.push("/manage");
         });
     },
@@ -70,35 +64,11 @@ export default {
 }
 
 .container {
-  height: 300px;
+  height: 200px;
   position: relative;
 }
 
 input {
   width: 80%;
-  height: 30px;
-  border-radius: 5px;
-  border-color: black;
-  border-style: solid;
-  border-width: 2px;
-  margin-bottom: 10px;
-}
-
-button {
-  background-color: #18b68e;
-  border: none;
-  color: white;
-  padding: 8px 40px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 10px;
-  border-color: black;
-  border-style: solid;  
-  border-width: 2px;
-  
 }
 </style>
