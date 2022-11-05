@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import datajson from "../data.json";
 export default {
   name: "ExtraPage",
 
@@ -31,12 +32,13 @@ export default {
     return {
       data: [],
       formattedData: [],
+      url: datajson["url"],
     };
   },
 
   methods: {
     getData() {
-      fetch("http://ronleon.nl:5000/weekly", {
+      fetch(this.url + "/weekly", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
