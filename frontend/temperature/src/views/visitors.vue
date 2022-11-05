@@ -30,7 +30,7 @@
               })
                 .then((response) => response.json())
                 .then((data) => this.visitors = data)
-        },
+        }, 
     },
  
     mounted() {

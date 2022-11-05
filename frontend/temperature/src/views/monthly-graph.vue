@@ -24,7 +24,7 @@
       this.getData();
     },
   
-    methods: {
+    methods: { 
       getData() {
         fetch("http://ronleon.nl:5000/weekly", {
           method: "GET",

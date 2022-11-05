@@ -54,7 +54,7 @@ export default {
           totalTemp = 0;
         }
       });
-      this.temps = temps;
+      this.temps = temps; 
     },
 
     setLabels() {

@@ -43,7 +43,7 @@ const routes = [
                 next()
             }
             else {
-                next("/login")
+                next("/login") 
             }
         }
     },

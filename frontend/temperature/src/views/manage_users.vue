@@ -24,7 +24,7 @@
           <td></td>
           <td><input type="text" v-model="username" /></td>
           <td><input type="text" v-model="password" /></td>
-          <td></td>
+          <td></td> 
           <button @click="addRecord" class="add">Add</button>
         </tr>
       </tbody>
