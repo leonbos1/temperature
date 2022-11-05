@@ -29,20 +29,6 @@ const routes = [
         }
     },
     {
-        path: '/manageusers',
-        name: 'ManageUsers',
-        component: ManageUsers,
-        beforeEnter: (_to,_from,next) => {
-            //TODO make this safe lol
-            if (localStorage.getItem("token")) {
-                next()
-            }
-            else {
-                next("/login")
-            }
-        }
-    },
-    {
         path: '/login',
         name: 'Login',
         component: Login
