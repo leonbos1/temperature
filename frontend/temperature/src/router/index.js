@@ -20,7 +20,21 @@ const routes = [
         name: 'Manage',
         component: Manage,
         beforeEnter: (_to,_from,next) => {
-            if (localStorage.getItem("token") === "ABHJ") {
+            if (localStorage.getItem("token")) {
+                next()
+            }
+            else {
+                next("/login") 
+            }
+        }
+    },
+    {
+        path: '/manageusers',
+        name: 'ManageUsers',
+        component: ManageUsers,
+        beforeEnter: (_to,_from,next) => {
+            //TODO make this safe lol
+            if (localStorage.getItem("token")) {
                 next()
             }
             else {
