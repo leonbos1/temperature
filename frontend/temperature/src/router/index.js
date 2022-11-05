@@ -38,7 +38,6 @@ const routes = [
         name: 'ManageTemps',
         component: ManageTemps,
         beforeEnter: (_to,_from,next) => {
-            //TODO make this safe lol
             if (localStorage.getItem("token")) {
                 next()
             }
@@ -52,7 +51,6 @@ const routes = [
         name: 'ManageUsers',
         component: ManageUsers,
         beforeEnter: (_to,_from,next) => {
-            //TODO make this safe lol
             if (localStorage.getItem("token")) {
                 next()
             }
