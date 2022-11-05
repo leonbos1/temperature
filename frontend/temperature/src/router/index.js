@@ -29,6 +29,19 @@ const routes = [
         }
     },
     {
+        path: '/manageusers',
+        name: 'ManageUsers',
+        component: Manage,
+        beforeEnter: (_to,_from,next) => {
+            if (localStorage.getItem("token")) {
+                next()
+            }
+            else {
+                next("/login")
+            }
+        }
+    },
+    {
         path: '/login',
         name: 'Login',
         component: Login
