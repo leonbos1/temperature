@@ -2,3 +2,4 @@
 backend/pw.txt
 backend/token.txt
 backend/visitors.txt
+frontend/temperature/src/data.json

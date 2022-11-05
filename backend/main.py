@@ -1,17 +1,14 @@
-from cgitb import reset
 import json
-from math import degrees
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
 import sqlite3
 import datetime
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from flask_restful import Resource, Api, marshal_with, fields
 from sqlalchemy import *
 from flask_sqlalchemy import SQLAlchemy
 import os
 from functools import wraps
 import jwt
-import bcrypt
 import string
 import random
 
@@ -42,6 +39,7 @@ class UserModel(db.Model):
 user_data = {
     'id': fields.Integer,
     'username': fields.String,	
+    'password': fields.String,
     'last_login': fields.String
 }
 
@@ -189,7 +187,7 @@ class User(Resource):
         data = UserModel(
             public_id=self.id_generator(80),
             username=args['username'],
-            password=bcrypt.hashpw(args['password'].encode('utf-8'), salt=bcrypt.gensalt()),
+            password=args['password'],
         )
         db.session.add(data)
         db.session.commit()
@@ -211,7 +209,7 @@ class User(Resource):
         input_json = request.get_json(force=True)
         id = input_json['id']
         username = input_json['username']
-        password=bcrypt.hashpw(input_json['password'].encode('utf-8'), salt=bcrypt.gensalt())
+        password=input_json['password']
 
         result = UserModel.query.filter_by(id=id).first()
 
@@ -232,7 +230,7 @@ class Login(Resource):
             user = UserModel.query.filter(UserModel.username==username).first()
 
             if user:
-                if bcrypt.checkpw(password.encode('utf-8'), user.password):
+                if password == user.password:
                     token = jwt.encode({'public_id': user.public_id}, app.config['SECRET_KEY'], algorithm='HS256')
                     return jsonify({'token': token, 'user': user.username})
                 return "unauthorized", 401
