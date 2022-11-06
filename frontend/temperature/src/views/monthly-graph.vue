@@ -6,6 +6,7 @@
   
   <script>
   import Chart from "chart.js/auto";
+  import datajson from "../data.json";
   
   export default {
     name: "MonthlyGraph",
@@ -13,6 +14,7 @@
     data: function () {
       return {
         data: [],
+        url: datajson['url'],
       };
     },
   
@@ -26,7 +28,7 @@
   
     methods: { 
       getData() {
-        fetch("http://ronleon.nl:5000/weekly", {
+        fetch(this.url + "/monthly", {
           method: "GET",
           headers: { token: localStorage.getItem("token")},
         })
@@ -39,33 +41,20 @@
   
       setTemps() {
         let temps = [];
-        let counter = 0;
-        let totalTemp = 0;
   
         this.data.forEach((element) => {
-          counter++;
-          totalTemp += element[1];
           
-          if (counter > 30) {
-            temps.push(totalTemp / counter);
-            counter = 0;
-            totalTemp = 0;
-          }
+          temps.push(element['degrees']);
+         
         });
         this.temps = temps;
       },
   
       setLabels() {
         let labels = [];
-        let counter = 0;
   
         this.data.forEach((element) => {
-          counter++;
-          if (counter > 30) {
-            let datetime = element[2] + " " + element[3];
-            labels.push(datetime);
-            counter = 0;
-          }
+          labels.push(element['date']);
         });
         this.labels = labels;
       },
@@ -93,7 +82,7 @@
              plugins: {
                   title: {
                       display: true,
-                      text: "Temperatuur deze week",
+                      text: "Temperatuur afgelopen maand",
                       font: {
                           size: 32
                       }

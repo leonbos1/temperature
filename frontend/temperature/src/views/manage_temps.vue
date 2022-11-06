@@ -1,13 +1,12 @@
 <template>
   <div class="table-container">
     <div class="page">
-
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
-      <p>{{page}}</p>
+      <p>{{ page }}</p>
       <button @click="nextPage">Next</button>
       <button @click="lastPage">Last</button>
-    </div> 
+    </div>
     <table>
       <thead>
         <tr>
@@ -51,7 +50,6 @@ export default {
 
   data: function () {
     return {
-      allData: [],
       data: [],
       page: 1,
       perPage: 50,
@@ -60,57 +58,70 @@ export default {
   },
   methods: {
     getData() {
-      fetch(this.url + "/weekly", {
+      fetch(this.url + "/", {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
+          //TODO make this go by convention
+          page: this.page,
+          per_page: this.perPage,
+        },
+      })
+        .then((response) => {
+          if (response.status == 404) {
+            this.page--;
+            this.getData();
+          }
+          else {
+            return response.json();
+          }
+        })
+        .then((data) => (this.data = data))
+    },
+    
+    
+    nextPage() {
+      fetch(this.url + "/last_page", {
+        method: "GET",
+        headers: {
+          token: localStorage.getItem("token"),
+          page : this.page,
+          per_page: this.perPage,
         },
       })
         .then((response) => response.json())
-        .then((allData) => this.showData(allData))
-        .then(()=>
-        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage)
-        );
-    },
-
-    showData(data) {
-      this.allData = [];
-      data.forEach((element) => {
-        let newData = {};
-        newData.id = element["id"];
-        newData.temp = element["degrees"];
-        newData.date = element["date"];
-        newData.time = element["time"];
-        this.allData.push(newData);
-      });
-    },
-
-    selectedData(firstIndex, secondIndex) {
-      this.data = this.allData.slice(firstIndex, secondIndex);
-    },
-
-    nextPage() {
-      if (this.page < this.allData.length / this.perPage) {
-        this.page++;
-        this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
-      }
+        .then((data) => {
+          if (this.page < data) {
+            this.page++;
+            this.getData();
+          }
+        });
     },
 
     prevPage() {
       if (this.page > 1) {
-        this.page--;
-        this.selectedData(this.page * this.perPage, this.page * this.perPage + this.perPage);
+        this.page --;
+        this.getData();
       }
     },
-    
+
     firstPage() {
       this.page = 1;
-      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
+      this.getData();
     },
 
     lastPage() {
-      this.page = Math.ceil(this.allData.length / this.perPage);
-      this.selectedData(this.page * this.perPage - this.perPage, this.page * this.perPage);
+      fetch(this.url + "/last_page", {
+        method: "GET",
+        headers: {
+          token: localStorage.getItem("token"),
+          page: this.page,
+          per_page: this.perPage,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => (this.page = data))
+        .then(() => this.getData());
     },
 
     deleteRecord(id) {
@@ -151,8 +162,7 @@ export default {
         }),
       }).then(() => this.getData());
     },
-
-  },
+  }
 };
 </script>
 

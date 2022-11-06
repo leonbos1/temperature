@@ -12,6 +12,7 @@ import jwt
 import string
 import random
 import time
+import math
 
 app = Flask(__name__)
 api = Api(app)
@@ -105,15 +106,22 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorator
 
-
-
 class Temperature(Resource):
     def __init__(self):
         self.conn = sqlite3.connect('data.db')
         self.cur = self.conn.cursor()
         self.sensor_fails = 0
+  
+    @marshal_with(temperature_fields)
+    def get(self):
+        headers = request.headers
+        page = int(headers['page'])
+        per_page = int(headers['per_page'])
         
-    #@token_required add this when esp32 code is updated
+        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+        return data.items, 200
+
+        
     def post(self):
         input_json = request.get_json(force=True)
  
@@ -136,9 +144,6 @@ class Temperature(Resource):
         db.session.commit()
 
         return "succes", 200
-        
-    def get(self):
-        return "", 404
 
     @token_required
     def delete(self, current_user):
@@ -169,7 +174,16 @@ class Temperature(Resource):
 
         except:
             return "unauthorized", 401
-        
+
+class Pagination(Resource):
+    def get(self):
+        headers = request.headers
+        page = int(headers['page'])
+        per_page = int(headers['per_page'])
+        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+        p = data.total/per_page
+        return math.ceil(p), 200
+     
 class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
@@ -242,6 +256,12 @@ class Login(Resource):
         #except:
          #   return "unauthorized", 401
 
+class Daily(Resource):
+    @marshal_with(temperature_fields)
+    def get(self):
+        result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
+        return result
+
 class Weekly(Resource):
     def __init__(self):
         self.conn = sqlite3.connect('data.db')
@@ -250,37 +270,32 @@ class Weekly(Resource):
     @marshal_with(temperature_fields)
     def get(self):
         max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
-        min_id = max_id - 10050
+        min_id = max_id - 11000
         data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
 
-        #TODO: make this more efficient
-        data_object = []
-        for i in range(len(data)):
-            empy_object = {}
-            empy_object['id'] = data[i].id
-            empy_object['degrees'] = data[i].degrees
-            empy_object['date'] = data[i].date
-            empy_object['time'] = data[i].time
-            data_object.append(empy_object)
+        counter = 0
+        total_temp = 0
+        temps = []
+        temp_dict = {}
+        last_week = datetime.datetime.now() - datetime.timedelta(days=7)
 
-        result = json.dumps(data_object)
-
-        result_json = json.loads(result)
-        today = datetime.datetime.now()
-        last_week = today - datetime.timedelta(days=7)
-
-        to_return = []
-
-        for e in result_json:
-            datetime_string = e.get('date')
+        for i in data:
+            datetime_string = i.date
             datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-            
             if datetimeobj >= last_week:
-                to_return.append(e)
-        
-        print(to_return)
-        return to_return, 200
 
+                counter += 1
+                total_temp += i.degrees
+
+                if counter == 30:
+                    temp_dict = i
+                    temp_dict.degrees = round(total_temp / 30, 2)
+                    print(temp_dict)
+                    temps.append(temp_dict)
+                    counter = 0
+                    total_temp = 0
+
+        return temps, 200
     
     def post(self):
         input_json = request.get_json(force=True)
@@ -305,6 +320,35 @@ class Weekly(Resource):
         conn.close()
 
         return "succes", 200
+
+class Monthly(Resource):
+    @marshal_with(temperature_fields)
+    def get(self):
+        max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
+        min_id = max_id - 40300
+        data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
+
+        counter = 0
+        total_temp = 0
+        temps = []
+        temp_dict = {}
+        last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+
+        for i in data:
+            datetime_string = i.date
+            datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
+            if datetimeobj >= last_month:
+                counter += 1
+                total_temp += i.degrees
+
+                if counter == 30:
+                    temp_dict = i
+                    temp_dict.degrees = round(total_temp / 30, 2)
+                    temps.append(temp_dict)
+                    counter = 0
+                    total_temp = 0
+
+        return temps, 200
 
 class CurrentTemp(Resource):
 
@@ -378,14 +422,17 @@ class Extra(Resource):
         return 200
 
 api.add_resource(Temperature, "/")
+api.add_resource(Daily, "/daily")
 api.add_resource(Weekly, "/weekly")
+api.add_resource(Monthly, "/monthly")
 api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")
 api.add_resource(Extra, "/extra")
+api.add_resource(Pagination, "/last_page")
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
+    app.run(host='192.168.178.220',port=5000, debug=True, threaded=True)
