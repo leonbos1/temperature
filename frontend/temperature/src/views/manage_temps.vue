@@ -1,9 +1,17 @@
 <template>
   <div class="table-container">
+    <div>
+      <select class="dropdown" @change="getData" v-model="date">
+        <option value="">All</option>
+        <option v-for="date in dates" :key="date" :value="date">
+          {{ date }}
+        </option>
+      </select>
+    </div>
     <div class="page">
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
-      <p>{{ page }}</p>
+      <input v-model="page"/>
       <button @click="nextPage">Next</button>
       <button @click="lastPage">Last</button>
     </div>
@@ -20,10 +28,10 @@
       <tbody>
         <tr v-for="d in data" v-bind:key="d">
           <td>{{ d.id }}</td>
-          <input type="text" v-model="d.temp" />
+          <input type="text" v-model="d.degrees" />
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
-          <button @click="editRecord(d.id, d.temp)" class="edit">Edit</button>
+          <button @click="editRecord(d.id, d.degrees)" class="edit">Edit</button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
         </tr>
         <tr>
@@ -45,7 +53,8 @@ export default {
   name: "ManageTempsPage",
 
   mounted() {
-    this.getData();
+    this.setDates();
+    this.getData()
   },
 
   data: function () {
@@ -54,6 +63,12 @@ export default {
       page: 1,
       perPage: 50,
       url: datajson["url"],
+      dates: [],
+      date: "",
+      newTemp: "",
+      newDate: "",
+      newTime: "",
+
     };
   },
   methods: {
@@ -62,9 +77,9 @@ export default {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-          //TODO make this go by convention
           page: this.page,
           per_page: this.perPage,
+          selected_date: this.date,
         },
       })
         .then((response) => {
@@ -78,8 +93,27 @@ export default {
         })
         .then((data) => (this.data = data))
     },
-    
-    
+
+    setDates() {
+      this.dates = [];
+      fetch(this.url+"/dates", {
+        method: "GET",
+        headers: {
+          token: localStorage.getItem("token"),
+          page: this.page,
+          per_page: this.perPage,
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        for (var i = 0; i < data.length; i++) {
+          if (!this.dates.includes(data[i].date)) {
+            this.dates.push(data[i].date);
+          }
+        }
+      })
+    },
+
     nextPage() {
       fetch(this.url + "/last_page", {
         method: "GET",
@@ -87,6 +121,7 @@ export default {
           token: localStorage.getItem("token"),
           page : this.page,
           per_page: this.perPage,
+          selected_date: this.date,
         },
       })
         .then((response) => response.json())
@@ -117,6 +152,7 @@ export default {
           token: localStorage.getItem("token"),
           page: this.page,
           per_page: this.perPage,
+          selected_date: this.date,
         },
       })
         .then((response) => response.json())
@@ -136,7 +172,7 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, temp) {
+    editRecord(id, degrees) {
       fetch(this.url, {
         method: "PUT",
         headers: {
@@ -144,7 +180,7 @@ export default {
         },
         body: JSON.stringify({
           id: id,
-          degrees: temp+''
+          degrees: degrees+''
         }),
       }).then(() => this.getData());
     },
@@ -236,6 +272,23 @@ td {
 
 input {
   text-align: center;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  background-color: #18b68e;
+  color: white;
+  padding: 4px 16px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 2px 2px;
+}
+
+option {
+  text-align: center;
+
 }
 </style>
  

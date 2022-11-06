@@ -37,6 +37,11 @@ temperature_fields = {
     'time': fields.String
 }
 
+date_fields = {
+    'date': fields.String,
+    'time': fields.String
+}
+
 class UserModel(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -117,9 +122,16 @@ class Temperature(Resource):
         headers = request.headers
         page = int(headers['page'])
         per_page = int(headers['per_page'])
-        
-        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
-        return data.items, 200
+        date = headers['selected_date']
+        if date == '':
+            data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+            return data.items, 200
+
+        else:
+            date = headers['selected_date']
+            data = TemperatureModel.query.filter_by(date=date).all()
+            return data, 200
+
 
         
     def post(self):
@@ -161,26 +173,28 @@ class Temperature(Resource):
 
     @token_required
     def put(self, current_user):
-        try:
-            input_json = request.get_json(force=True)
-            id = input_json['id']
-            degrees = input_json['degrees']
-            data = TemperatureModel.query.filter_by(id=id).first()
-            if data:
-                data.degrees = degrees
-                db.session.commit()
-                return "succes", 200
-            return "unauthorized", 401
+        input_json = request.get_json(force=True)
+        id = input_json['id']
+        degrees = input_json['degrees']
+        data = TemperatureModel.query.filter_by(id=id).first()
+        if data:
+            data.degrees = degrees
+            db.session.commit()
+            return "succes", 200
+        return "unauthorized", 401
 
-        except:
-            return "unauthorized", 401
 
 class Pagination(Resource):
     def get(self):
         headers = request.headers
         page = int(headers['page'])
         per_page = int(headers['per_page'])
-        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+        date = headers['selected_date']
+        if date == '':
+            data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+        else:
+            data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
+
         p = data.total/per_page
         return math.ceil(p), 200
      
@@ -421,7 +435,14 @@ class Extra(Resource):
         db.session.commit()
         return 200
 
+class Dates(Resource):
+    @marshal_with(date_fields)
+    def get(self):
+        dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
+        return dates, 200
+
 api.add_resource(Temperature, "/")
+api.add_resource(Dates, "/dates")
 api.add_resource(Daily, "/daily")
 api.add_resource(Weekly, "/weekly")
 api.add_resource(Monthly, "/monthly")
@@ -435,4 +456,4 @@ api.add_resource(Pagination, "/last_page")
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.178.220',port=5000, debug=True, threaded=True)
+    app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
