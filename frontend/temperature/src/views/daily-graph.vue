@@ -30,13 +30,12 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/weekly", {
+      fetch(this.url + "/daily", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
         .then((response) => response.json())
         .then((data) => (this.data = data))
-        .then(() => this.setDailyData())
         .then(() => this.setTemps())
         .then(() => this.setLabels())
         .then(() => this.createGraph());
@@ -44,56 +43,20 @@ export default {
 
     setTemps() {
       let temps = [];
-      let counter = 0;
-      let totalTemp = 0;
-
-      this.dailyData.forEach((element) => {
-        counter++;
-        totalTemp += element[1];
-        
-        if (counter > 10) {
-          temps.push(totalTemp / counter);
-          counter = 0;
-          totalTemp = 0;
-        }
-      });
-      this.temps = temps;
-    },
-
-    setDailyData() {
       this.data.forEach((element) => {
-        let date = new Date();
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-
-        if (month < 10) {
-          month = "0" + month;
+        temps.push(element['degrees']);
         }
-        if (day < 10) {
-          day = "0" + day;
-        }
-        let year = date.getFullYear();
-
-        let today = `${year}-${month}-${day}`;
-
-        if (today === element[2]) {
-          this.dailyData.push(element);
-        }
-      });
+      );
+      this.temps = temps;
     },
 
     setLabels() {
       let labels = [];
-      let counter = 0;
     
-      this.dailyData.forEach((element) => {
-        counter++;
-        if (counter > 10) {
-          let datetime = element[3];
-          labels.push(datetime);
-          counter = 0;
+      this.data.forEach((element) => {
+        labels.push(element['time']);
         }
-      });
+      );
       this.labels = labels;
     },
 
@@ -120,7 +83,7 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Temperature today",
+              text: "Temperatuur van de afgelopen 24 uur",
               font: {
                 size: 32,
               },

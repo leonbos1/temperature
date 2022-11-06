@@ -41,34 +41,21 @@ export default {
 
     setTemps() {
       let temps = [];
-      let counter = 0;
-      let totalTemp = 0;
 
       this.data.forEach((element) => {
-        counter++;
-        totalTemp += element['degrees'];
-        
-        if (counter > 30) {
-          temps.push(totalTemp / counter);
-          counter = 0;
-          totalTemp = 0;
+          temps.push(element['degrees']);
         }
-      });
+      );
       this.temps = temps; 
     },
 
     setLabels() {
       let labels = [];
-      let counter = 0;
 
       this.data.forEach((element) => {
-        counter++;
-        if (counter > 30) {
-          let datetime = element['date'] + " " + element['time'];
-          labels.push(datetime);
-          counter = 0;
+        labels.push(element['date']);
         }
-      });
+      );
       this.labels = labels;
     },
 
@@ -95,7 +82,7 @@ export default {
            plugins: {
                 title: {
                     display: true,
-                    text: "Temperature this week",
+                    text: "Temperatuur afgelopen week",
                     font: {
                         size: 32
                     }
