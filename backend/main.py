@@ -11,6 +11,7 @@ from functools import wraps
 import jwt
 import string
 import random
+import time
 
 app = Flask(__name__)
 api = Api(app)
@@ -28,6 +29,13 @@ class TemperatureModel(db.Model):
     date = db.Column(db.String)
     time = db.Column(db.String)
 
+temperature_fields = {
+    'id': fields.Integer,
+    'degrees': fields.Float,
+    'date': fields.String,
+    'time': fields.String
+}
+
 class UserModel(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -36,7 +44,7 @@ class UserModel(db.Model):
     password = db.Column(db.String)
     last_login = db.Column(db.String)
 
-user_data = {
+user_fields = {
     'id': fields.Integer,
     'username': fields.String,	
     'password': fields.String,
@@ -62,7 +70,7 @@ class ExtraModel(db.Model):
     date = db.Column(db.String)
     time = db.Column(db.String)
 
-extra_data = {
+extra_fields = {
     'id': fields.Integer,
     'current_temp': fields.Float,
     'daily_average': fields.Float,
@@ -103,12 +111,6 @@ class Temperature(Resource):
     def __init__(self):
         self.conn = sqlite3.connect('data.db')
         self.cur = self.conn.cursor()
-        f = open("pw.txt","r")
-        t = open("token.txt","r")
-        self.password = f.readlines()[0]
-        self.token = t.readlines()[0]
-        f.close()
-        t.close()
         self.sensor_fails = 0
         
     #@token_required add this when esp32 code is updated
@@ -172,7 +174,7 @@ class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
 
-    @marshal_with(user_data)
+    @marshal_with(user_fields)
     @token_required
     def get(self, current_user):
         result = UserModel.query.all()
@@ -244,18 +246,24 @@ class Weekly(Resource):
     def __init__(self):
         self.conn = sqlite3.connect('data.db')
         self.cur = self.conn.cursor()
-        f = open("pw.txt","r")
-        t = open("token.txt","r")
-        self.password = f.readlines()[0]
-        self.token = t.readlines()[0]
-        f.close()
-        t.close()
 
+    @marshal_with(temperature_fields)
     def get(self):
-        max_id = self.cur.execute("select * from temperatures order by id asc limit 10500").fetchall()[-1][0]
+        max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
         min_id = max_id - 10050
-        data = self.cur.execute(f"select * from temperatures where id > {min_id}").fetchall()
-        result = json.dumps(data)
+        data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
+
+        #TODO: make this more efficient
+        data_object = []
+        for i in range(len(data)):
+            empy_object = {}
+            empy_object['id'] = data[i].id
+            empy_object['degrees'] = data[i].degrees
+            empy_object['date'] = data[i].date
+            empy_object['time'] = data[i].time
+            data_object.append(empy_object)
+
+        result = json.dumps(data_object)
 
         result_json = json.loads(result)
         today = datetime.datetime.now()
@@ -264,12 +272,13 @@ class Weekly(Resource):
         to_return = []
 
         for e in result_json:
-            datetime_string = e[2]
+            datetime_string = e.get('date')
             datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
             
             if datetimeobj >= last_week:
                 to_return.append(e)
         
+        print(to_return)
         return to_return, 200
 
     
@@ -347,7 +356,7 @@ class Visitor(Resource):
 
 class Extra(Resource):
 
-    @marshal_with(extra_data)
+    @marshal_with(extra_fields)
     def get(self):
         result = ExtraModel.query.order_by(ExtraModel.id.desc()).first()
         
@@ -379,4 +388,4 @@ api.add_resource(Extra, "/extra")
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host='192.168.178.220',port=5000, debug=True, threaded=True)
+    app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)

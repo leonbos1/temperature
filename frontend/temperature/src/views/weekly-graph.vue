@@ -46,7 +46,7 @@ export default {
 
       this.data.forEach((element) => {
         counter++;
-        totalTemp += element[1];
+        totalTemp += element['degrees'];
         
         if (counter > 30) {
           temps.push(totalTemp / counter);
@@ -64,7 +64,7 @@ export default {
       this.data.forEach((element) => {
         counter++;
         if (counter > 30) {
-          let datetime = element[2] + " " + element[3];
+          let datetime = element['date'] + " " + element['time'];
           labels.push(datetime);
           counter = 0;
         }

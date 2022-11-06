@@ -77,10 +77,10 @@ export default {
       this.allData = [];
       data.forEach((element) => {
         let newData = {};
-        newData.id = element[0];
-        newData.temp = element[1];
-        newData.date = element[2];
-        newData.time = element[3];
+        newData.id = element["id"];
+        newData.temp = element["degrees"];
+        newData.date = element["date"];
+        newData.time = element["time"];
         this.allData.push(newData);
       });
     },
