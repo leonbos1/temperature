@@ -292,6 +292,7 @@ class Weekly(Resource):
         temps = []
         temp_dict = {}
         last_week = datetime.datetime.now() - datetime.timedelta(days=7)
+        max_counter = 10800
 
         for i in data:
             datetime_string = i.date
@@ -301,9 +302,9 @@ class Weekly(Resource):
                 counter += 1
                 total_temp += i.degrees
 
-                if counter == 30:
+                if counter == max_counter:
                     temp_dict = i
-                    temp_dict.degrees = round(total_temp / 30, 2)
+                    temp_dict.degrees = round(total_temp / counter, 2)
                     print(temp_dict)
                     temps.append(temp_dict)
                     counter = 0
@@ -347,6 +348,7 @@ class Monthly(Resource):
         temps = []
         temp_dict = {}
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+        max_counter = 21600
 
         for i in data:
             datetime_string = i.date
@@ -355,9 +357,9 @@ class Monthly(Resource):
                 counter += 1
                 total_temp += i.degrees
 
-                if counter == 30:
+                if counter == max_counter:
                     temp_dict = i
-                    temp_dict.degrees = round(total_temp / 30, 2)
+                    temp_dict.degrees = round(total_temp / counter, 2)
                     temps.append(temp_dict)
                     counter = 0
                     total_temp = 0
