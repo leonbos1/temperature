@@ -292,7 +292,7 @@ class Weekly(Resource):
         temps = []
         temp_dict = {}
         last_week = datetime.datetime.now() - datetime.timedelta(days=7)
-        max_counter = 10800
+        max_counter = 180
 
         for i in data:
             datetime_string = i.date
@@ -348,7 +348,7 @@ class Monthly(Resource):
         temps = []
         temp_dict = {}
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-        max_counter = 21600
+        max_counter = 360
 
         for i in data:
             datetime_string = i.date
