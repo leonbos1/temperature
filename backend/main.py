@@ -286,92 +286,15 @@ class Daily(Resource):
         result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
         return result
 
-class Weekly(Resource):
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
-        self.cur = self.conn.cursor()
-
-    @marshal_with(temperature_fields)
-    def get(self):
-        max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
-        min_id = max_id - 11000
-        data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
-
-        counter = 0
-        total_temp = 0
-        temps = []
-        temp_dict = {}
-        last_week = datetime.datetime.now() - datetime.timedelta(days=7)
-        max_counter = 180
-
-        for i in data:
-            datetime_string = i.date
-            datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-            if datetimeobj >= last_week:
-
-                counter += 1
-                total_temp += i.degrees
-
-                if counter == max_counter:
-                    temp_dict = i
-                    temp_dict.degrees = round(total_temp / counter, 2)
-                    temps.append(temp_dict)
-                    counter = 0
-                    total_temp = 0
-
-        return temps, 200
-    
-    def post(self):
-        input_json = request.get_json(force=True)
-        conn = sqlite3.connect('data.db')
-        cur = conn.cursor()
-
-        temp = round(input_json['degrees'], 2)
-
-        date = datetime.date.today()
-        time = datetime.datetime.now().strftime("%H:%M:%S")
-
-        avgtemp = get_last_temp()
-
-        max_deviation = 1.5
-
-        if temp > avgtemp + max_deviation or temp < avgtemp - max_deviation:
-            
-            temp = avgtemp
-            
-        cur.execute(f"INSERT INTO temperatures (degrees, date, time) VALUES ({temp}, '{date}', '{time}')")
-        conn.commit()
-        conn.close()
-
-        return "succes", 200
+@app.route('/temperature/weekly')
+@marshal_with(average_fields)
+def weekly():
+    data = TemperatureModel.query.filter(TemperatureModel.date.between(datetime.date.today() - datetime.timedelta(days=7), datetime.date.today())).all()
+    return data, 200
 
 @app.route('/temperature/monthly')
 @marshal_with(average_fields)
 def monthly():
-    # max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
-    
-    # min_id = max_id - 40300
-    # data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
-    # counter = 0
-    # total_temp = 0
-    # temps = []
-    # temp_dict = {}
-    # last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-    # max_counter = 360
-
-    # for i in data:
-    #     datetime_string = i.date
-    #     datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-    #     if datetimeobj >= last_month:
-    #         counter += 1
-    #         total_temp += i.degrees
-
-    #         if counter == max_counter:
-    #             temp_dict = i
-    #             temp_dict.degrees = round(total_temp / counter, 2)
-    #             temps.append(temp_dict)
-    #             counter = 0
-    #             total_temp = 0
     data = AverageTemperatures.query.all()
     return data, 200
 
@@ -443,7 +366,6 @@ class Dates(Resource):
 api.add_resource(Temperature, "/")
 api.add_resource(Dates, "/dates")
 api.add_resource(Daily, "/daily")
-api.add_resource(Weekly, "/weekly")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")

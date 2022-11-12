@@ -49,19 +49,17 @@
       setLabels() {
         this.labels = [];
         this.data.forEach((element) => {
-          this.labels.push(element['id']);
+          this.labels.push(element['date']);
         });
       },
   
       createGraph() {
         const ctx = document.getElementById("weekly-graph");
-  
-        const labels = this.labels;
-  
+
         const myChart = new Chart(ctx, {
           type: "line",
           data: {
-            labels: labels,
+            labels: this.labels,
             datasets: [
               {
                 label: "Temperature",
