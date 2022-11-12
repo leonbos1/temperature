@@ -347,7 +347,7 @@ def monthly():
     temps = []
     temp_dict = {}
     last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-    max_counter = 1360
+    max_counter = 360
 
     for i in data:
         datetime_string = i.date
