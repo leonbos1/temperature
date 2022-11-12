@@ -24,10 +24,10 @@ for i in data:
         current_date = i[1]
         temps = []
 
-cur.execute("DELETE FROM temperatures_per_day")
+cur.execute("DELETE FROM average_temperatures")
 conn.commit()
 
 for i in temperature_per_day:
-    cur.execute("INSERT INTO temperature_per_day VALUES (?,?)", (i, temperature_per_day[i]))
+    cur.execute("INSERT INTO average_temperatures VALUES (?,?)", (i, temperature_per_day[i]))
 
 conn.commit()
