@@ -35,4 +35,7 @@ for i in temperature_per_day:
     print(i, temperature_per_day[i])
     cur.execute("INSERT INTO average_temperatures VALUES (?,?)", (i, temperature_per_day[i]))
 
+cur.execute("SELECT * FROM average_temperatures")
+print(cur.fetchall())
+
 conn.commit()
