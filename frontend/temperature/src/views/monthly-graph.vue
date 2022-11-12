@@ -28,7 +28,7 @@
   
     methods: { 
       getData() {
-        fetch(this.url + "/monthly", {
+        fetch(this.url + "/temperature/monthly", {
           method: "GET",
           headers: { token: localStorage.getItem("token")},
         })

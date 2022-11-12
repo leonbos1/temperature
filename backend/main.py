@@ -305,7 +305,6 @@ class Weekly(Resource):
                 if counter == max_counter:
                     temp_dict = i
                     temp_dict.degrees = round(total_temp / counter, 2)
-                    print(temp_dict)
                     temps.append(temp_dict)
                     counter = 0
                     total_temp = 0
@@ -336,55 +335,43 @@ class Weekly(Resource):
 
         return "succes", 200
 
-class Monthly(Resource):
-    @marshal_with(temperature_fields)
-    def get(self):
-        max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
-        min_id = max_id - 40300
-        data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
+@app.route('/temperature/monthly')
+@marshal_with(temperature_fields)
+def monthly():
+    max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
+    
+    min_id = max_id - 40300
+    data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
+    counter = 0
+    total_temp = 0
+    temps = []
+    temp_dict = {}
+    last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+    max_counter = 360
 
-        counter = 0
-        total_temp = 0
-        temps = []
-        temp_dict = {}
-        last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-        max_counter = 360
+    for i in data:
+        datetime_string = i.date
+        datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
+        if datetimeobj >= last_month:
+            counter += 1
+            total_temp += i.degrees
 
-        for i in data:
-            datetime_string = i.date
-            datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-            if datetimeobj >= last_month:
-                counter += 1
-                total_temp += i.degrees
+            if counter == max_counter:
+                temp_dict = i
+                temp_dict.degrees = round(total_temp / counter, 2)
+                temps.append(temp_dict)
+                counter = 0
+                total_temp = 0
 
-                if counter == max_counter:
-                    temp_dict = i
-                    temp_dict.degrees = round(total_temp / counter, 2)
-                    temps.append(temp_dict)
-                    counter = 0
-                    total_temp = 0
+    return temps, 200
 
-        return temps, 200
+@app.route('/temperature/current')
+@marshal_with(temperature_fields)
+def current_temperature():
 
-class CurrentTemp(Resource):
+        data = TemperatureModel.query.order_by(TemperatureModel.id.desc()).limit(5).all()
 
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
-        self.cur = self.conn.cursor()
-        f = open("pw.txt","r")
-        t = open("token.txt","r")
-        self.password = f.readlines()[0]
-        self.token = t.readlines()[0]
-        f.close()
-        t.close()
-
-    def get(self):
-            self.cur.execute("select * from temperatures order by id desc limit 5")
-
-            result = json.dumps(self.cur.fetchall())
-            result_json = json.loads(result)
-
-            return result_json, 200
+        return data, 200
 
 
 def get_last_temp():
@@ -447,8 +434,6 @@ api.add_resource(Temperature, "/")
 api.add_resource(Dates, "/dates")
 api.add_resource(Daily, "/daily")
 api.add_resource(Weekly, "/weekly")
-api.add_resource(Monthly, "/monthly")
-api.add_resource(CurrentTemp, "/current_temp")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")

@@ -26,7 +26,7 @@ export default {
   methods: {
 
     getData() {
-      fetch(this.url + "/extra", {
+      fetch(this.url + "/temperature/current", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
