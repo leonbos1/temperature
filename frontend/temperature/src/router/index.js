@@ -3,7 +3,6 @@ import ManageTemps from '../views/manage_temps.vue'
 import ManageUsers from '../views/manage_users.vue'
 import Home from '../views/home.vue'
 import Login from '../views/login.vue'
-import Extra from '../views/extra.vue'
 import Daily from '../views/daily-graph.vue'	
 import Weekly from '../views/weekly-graph.vue'	
 import Monthly from '../views/monthly-graph.vue'	
@@ -12,11 +11,6 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home
-    },
-    {
-        path: '/extra',
-        name: 'Extra',
-        component: Extra
     },
     {
         path: '/daily',
