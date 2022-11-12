@@ -28,6 +28,7 @@ cur.execute("DELETE FROM average_temperatures")
 conn.commit()
 
 for i in temperature_per_day:
+    print(i, temperature_per_day[i])
     cur.execute("INSERT INTO average_temperatures VALUES (?,?)", (i, temperature_per_day[i]))
 
 conn.commit()
