@@ -40,23 +40,17 @@
       },
   
       setTemps() {
-        let temps = [];
-  
+        this.temps = [];
         this.data.forEach((element) => {
-          
-          temps.push(element['degrees']);
-         
+          this.temps.push(element['degrees']);
         });
-        this.temps = temps;
       },
   
       setLabels() {
-        let labels = [];
-  
+        this.labels = [];
         this.data.forEach((element) => {
-          labels.push(element['date']);
+          this.labels.push(element['id']);
         });
-        this.labels = labels;
       },
   
       createGraph() {

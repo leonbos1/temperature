@@ -65,6 +65,16 @@ class SensorModel(db.Model):
     last_temp = db.Column(db.Float(precision=2))
     last_send = db.Column(db.String)
 
+class AverageTemperatures(db.Model):
+    __tablename__ = 'average_temperatures'
+    id = db.Column(db.String, primary_key=True)
+    degrees = db.Column(db.Float(precision=2))
+
+average_fields = {
+    'id': fields.String,
+    'degrees': fields.Float
+}
+
 class ExtraModel(db.Model):
     __tablename__ = 'extra'
     id = db.Column(db.Integer, primary_key=True)
@@ -336,34 +346,34 @@ class Weekly(Resource):
         return "succes", 200
 
 @app.route('/temperature/monthly')
-@marshal_with(temperature_fields)
+@marshal_with(average_fields)
 def monthly():
-    max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
+    # max_id = TemperatureModel.query.order_by(TemperatureModel.id.desc()).first().id
     
-    min_id = max_id - 40300
-    data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
-    counter = 0
-    total_temp = 0
-    temps = []
-    temp_dict = {}
-    last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-    max_counter = 360
+    # min_id = max_id - 40300
+    # data = TemperatureModel.query.filter(TemperatureModel.id > min_id).all()
+    # counter = 0
+    # total_temp = 0
+    # temps = []
+    # temp_dict = {}
+    # last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+    # max_counter = 360
 
-    for i in data:
-        datetime_string = i.date
-        datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
-        if datetimeobj >= last_month:
-            counter += 1
-            total_temp += i.degrees
+    # for i in data:
+    #     datetime_string = i.date
+    #     datetimeobj=datetime.datetime.strptime(datetime_string, "%Y-%m-%d")
+    #     if datetimeobj >= last_month:
+    #         counter += 1
+    #         total_temp += i.degrees
 
-            if counter == max_counter:
-                temp_dict = i
-                temp_dict.degrees = round(total_temp / counter, 2)
-                temps.append(temp_dict)
-                counter = 0
-                total_temp = 0
-
-    return temps, 200
+    #         if counter == max_counter:
+    #             temp_dict = i
+    #             temp_dict.degrees = round(total_temp / counter, 2)
+    #             temps.append(temp_dict)
+    #             counter = 0
+    #             total_temp = 0
+    data = AverageTemperatures.query.all()
+    return data, 200
 
 @app.route('/temperature/current')
 @marshal_with(temperature_fields)
