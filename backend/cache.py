@@ -10,6 +10,8 @@ cur = conn.cursor()
 cur.execute("SELECT degrees, date, time FROM temperatures LIMIT 40500")
 
 data = cur.fetchall()
+print(data[0][1])
 
-for i in data:
-    print(i)
+#for i in data:
+ #   current_date = i[1]
+        
