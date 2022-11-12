@@ -20,7 +20,7 @@ for i in data:
     if current_date == i[1]:
         temps.append(i[0])
     else:
-        temperature_per_day[current_date] = sum(temps) / len(temps)
+        temperature_per_day[current_date] = round(sum(temps) / len(temps),2)
         current_date = i[1]
         temps = []
 
