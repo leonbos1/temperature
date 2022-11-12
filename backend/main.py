@@ -289,7 +289,8 @@ class Daily(Resource):
 @app.route('/temperature/weekly')
 @marshal_with(average_fields)
 def weekly():
-    data = TemperatureModel.query.filter(TemperatureModel.date.between(datetime.date.today() - datetime.timedelta(days=7), datetime.date.today())).all()
+    #last 7 days
+    data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today() - datetime.timedelta(days=7)).all()
     return data, 200
 
 @app.route('/temperature/monthly')
