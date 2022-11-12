@@ -67,11 +67,11 @@ class SensorModel(db.Model):
 
 class AverageTemperatures(db.Model):
     __tablename__ = 'average_temperatures'
-    id = db.Column(db.String, primary_key=True)
+    date = db.Column(db.String, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
 
 average_fields = {
-    'id': fields.String,
+    'date': fields.String,
     'degrees': fields.Float
 }
 
