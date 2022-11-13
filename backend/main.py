@@ -323,12 +323,32 @@ def monthly():
     return data, 200
 
 @app.route('/temperature/current')
-@marshal_with(temperature_fields)
 def current_temperature():
+    result = TemperatureModel.query.order_by(TemperatureModel.id.desc()).limit(3).all()
+    temp = 0
+    for i in result:
+        temp += i.degrees
+    current_temp = round(temp/3, 2)
 
-        data = TemperatureModel.query.order_by(TemperatureModel.id.desc()).limit(5).all()
+    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
+    temps_today = []
+    for i in result:
+        temps_today.append(i.degrees)
+    daily_average = round(sum(temps_today)/len(temps_today), 2)
 
-        return data, 200
+    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today() - datetime.timedelta(days=1)).all()
+    temps_yesterday = []
+    for i in result:
+        temps_yesterday.append(i.degrees)
+    average_yesterday = round(sum(temps_yesterday)/len(temps_yesterday), 2)
+
+    data = {
+        'current_temp': current_temp,
+        'daily_average': daily_average,
+        'average_yesterday': average_yesterday
+    }
+    
+    return data, 200
 
 
 def get_last_temp():
