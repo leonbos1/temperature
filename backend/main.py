@@ -193,20 +193,19 @@ class Temperature(Resource):
             return "succes", 200
         return "unauthorized", 401
 
+@app.route('/last_page')
+def pagination():
+    headers = request.headers
+    page = int(headers['page'])
+    per_page = int(headers['per_page'])
+    date = headers['selected_date']
+    if date == '':
+        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+    else:
+        data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
 
-class Pagination(Resource):
-    def get(self):
-        headers = request.headers
-        page = int(headers['page'])
-        per_page = int(headers['per_page'])
-        date = headers['selected_date']
-        if date == '':
-            data = TemperatureModel.query.paginate(page=page, per_page=per_page)
-        else:
-            data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
-
-        p = data.total/per_page
-        return math.ceil(p), 200
+    p = data.total/per_page
+    return math.ceil(p), 200
      
 class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
@@ -350,70 +349,27 @@ def current_temperature():
     
     return data, 200
 
+@app.route('/visitors')
+def post(self):
+    t = open("visitors.txt","r")
+    visitors = t.readlines()[0]
+    t.close()
 
-def get_last_temp():
-    conn = sqlite3.connect('data.db')
-    cur = conn.cursor()
-    cur.execute("SELECT degrees FROM temperatures ORDER BY id DESC LIMIT 3")
-    
-    temps = cur.fetchall()
-    avg_temp = 0
-    for i in temps:
-        avg_temp += i[0]
+    f = open("visitors.txt","w")
+    f.write(str(int(visitors) + 1))
+    f.close()
 
-    avg_temp = round(avg_temp / len(temps), 2)
-    conn.close()
-    return avg_temp
+    return int(visitors) + 1
 
-class Visitor(Resource):
-
-    def post(self):
-        t = open("visitors.txt","r")
-        visitors = t.readlines()[0]
-        t.close()
-
-        f = open("visitors.txt","w")
-        f.write(str(int(visitors) + 1))
-        f.close()
-
-        return int(visitors) + 1
-
-class Extra(Resource):
-
-    @marshal_with(extra_fields)
-    def get(self):
-        result = ExtraModel.query.order_by(ExtraModel.id.desc()).first()
-        
-        return result, 200
-
-    def post(self):
-        input_json = request.get_json(force=True)
-        data = ExtraModel(
-            current_temp = input_json['current_temp'],
-            monthly_average = input_json['monthly_average'],
-            weekly_average=input_json['weekly_average'],
-            daily_average=input_json['daily_average'],
-            average_yesterday=input_json['average_yesterday'],
-            date=datetime.date.today(),
-            time=datetime.datetime.now().strftime("%H:%M:%S")
-        )
-        db.session.add(data)
-        db.session.commit()
-        return 200
-
-class Dates(Resource):
-    @marshal_with(date_fields)
-    def get(self):
-        dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
-        return dates, 200
+@app.route('/dates')
+@marshal_with(date_fields)
+def get(self):
+    dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
+    return dates, 200
 
 api.add_resource(Temperature, "/")
-api.add_resource(Dates, "/dates")
 api.add_resource(Login, "/login")
-api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")
-api.add_resource(Extra, "/extra")
-api.add_resource(Pagination, "/last_page")
 
 if __name__ == "__main__":
     with app.app_context():
