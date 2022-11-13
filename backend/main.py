@@ -291,7 +291,7 @@ def daily():
     for i in result:
         temp += i.degrees
         counter += 1
-        if counter > 50:
+        if counter > 15:
             i.degrees = temp/counter
             data.append(i)
             temp = 0
