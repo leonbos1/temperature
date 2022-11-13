@@ -280,11 +280,24 @@ class Login(Resource):
         #except:
          #   return "unauthorized", 401
 
-class Daily(Resource):
-    @marshal_with(temperature_fields)
-    def get(self):
-        result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
-        return result
+@app.route('/temperature/daily')
+@marshal_with(temperature_fields)
+def daily():
+    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
+    data = []
+    temp = 0
+    counter = 0
+
+    for i in result:
+        temp += i.degrees
+        counter += 1
+        if counter > 50:
+            i.degrees = temp/counter
+            data.append(i)
+            temp = 0
+            counter = 0
+
+    return result, 200
 
 @app.route('/temperature/weekly')
 @marshal_with(average_fields)
@@ -366,7 +379,6 @@ class Dates(Resource):
 
 api.add_resource(Temperature, "/")
 api.add_resource(Dates, "/dates")
-api.add_resource(Daily, "/daily")
 api.add_resource(Login, "/login")
 api.add_resource(Visitor, "/visitors")
 api.add_resource(User, "/user")
