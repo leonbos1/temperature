@@ -43,7 +43,7 @@ export default {
         .then((data) => {
           localStorage.setItem("token", data["token"]);
           localStorage.setItem("username", data["user"]);
-          this.$router.push("/manage");
+          window.location.href = "/";
         });
     },
   },

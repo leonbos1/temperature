@@ -20,11 +20,14 @@
 
 <script>
  
+import datajson from "./data.json";
+
 export default {
   name: "App",
   data: function () {
     return {
       loggedIn: false,
+      url: datajson['url'],
     };
   },
   mounted() {
@@ -32,15 +35,14 @@ export default {
   },
   methods: {
     checkLogin() {
-      fetch("/checklogin", {
+      fetch(this.url + "/checklogin", {
         method: "GET",
         headers: { token: localStorage.getItem("token") },
       })
-        .then((response) => response.json())
         .then((data) => {
-          console.log(data);
-          if (data["status"] == "success") {
+          if (data.status == 200) {
             this.loggedIn = true;
+
           } else {
             this.loggedIn = false;
           }
@@ -50,6 +52,7 @@ export default {
     logout() {
       localStorage.removeItem("token");
       this.loggedIn = false;
+      window.location.href = "/";
     },
   },
 };
