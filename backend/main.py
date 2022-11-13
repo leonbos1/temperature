@@ -349,8 +349,8 @@ def current_temperature():
     
     return data, 200
 
-@app.route('/visitors')
-def post(self):
+@app.route('/visitors', methods=['POST'])
+def update_visitors():
     t = open("visitors.txt","r")
     visitors = t.readlines()[0]
     t.close()
@@ -363,7 +363,7 @@ def post(self):
 
 @app.route('/dates')
 @marshal_with(date_fields)
-def get(self):
+def get():
     dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
     return dates, 200
 
