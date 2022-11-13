@@ -297,7 +297,7 @@ def daily():
             temp = 0
             counter = 0
 
-    return result, 200
+    return data, 200
 
 @app.route('/temperature/weekly')
 @marshal_with(average_fields)

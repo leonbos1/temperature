@@ -30,7 +30,7 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/daily", {
+      fetch(this.url + "/temperature/daily", {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })
