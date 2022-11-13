@@ -18,10 +18,8 @@
   </div>
 </template>
 
-
 <script>
  
-
 export default {
   name: "App",
   data: function () {
@@ -34,12 +32,20 @@ export default {
   },
   methods: {
     checkLogin() {
-      if (localStorage.getItem("token")) {
-        this.loggedIn = true; 
-      }
-      else {
-        this.loggedIn = false;
-      }
+      fetch("/checklogin", {
+        method: "GET",
+        headers: { token: localStorage.getItem("token") },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          if (data["status"] == "success") {
+            this.loggedIn = true;
+          } else {
+            this.loggedIn = false;
+          }
+        });
+
     },
     logout() {
       localStorage.removeItem("token");

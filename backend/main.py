@@ -299,6 +299,16 @@ def daily():
 
     return data, 200
 
+@app.route('/checklogin')
+def check_login():
+    headers = request.headers
+    token = headers['token']
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        return "succes", 200
+    except:
+        return "unauthorized", 401
+
 @app.route('/temperature/weekly')
 @marshal_with(average_fields)
 def weekly():

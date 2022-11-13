@@ -52,7 +52,6 @@ export default {
 
     setLabels() {
       let labels = [];
-    
       this.data.forEach((element) => {
         labels.push(element['time']);
         }
