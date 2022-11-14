@@ -3,7 +3,6 @@ from time import sleep
 
 def main():
     while True:
-        sleep(60)
         conn = sqlite3.connect('data.db')
         cur = conn.cursor()
         cur.execute("SELECT degrees, date, time FROM temperatures LIMIT 40500")
@@ -34,6 +33,8 @@ def main():
             cur.execute("INSERT INTO average_temperatures VALUES (?,?)", (i, temperature_per_day[i]))
 
         conn.commit()
+        conn.close()
+        sleep(60)
 
 if __name__ == "__main__":
     main()
