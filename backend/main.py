@@ -363,7 +363,7 @@ def update_visitors():
 
 @app.route('/dates')
 @marshal_with(date_fields)
-def get():
+def dates():
     dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
     return dates, 200
 
