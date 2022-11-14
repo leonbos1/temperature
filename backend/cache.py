@@ -22,10 +22,9 @@ def main():
                 temperature_per_day[current_date] = round(sum(temps) / len(temps),2)
                 current_date = i[1]
                 temps = []
-        
-            if i == data[-1]:
-                temperature_per_day[current_date] = round(sum(temps) / len(temps),2)
-
+            last_element = i
+            
+        temperature_per_day[last_element[i]] = round(sum(temps) / len(temps),2)
 
         cur.execute("DELETE FROM average_temperatures")
         conn.commit()
