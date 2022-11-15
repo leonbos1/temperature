@@ -205,7 +205,9 @@ def pagination():
         data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
 
     p = data.total/per_page
-    return math.ceil(p), 200
+    #return a json
+    result = jsonify({'last_page': math.ceil(p)})
+    return result, 200
      
 class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
