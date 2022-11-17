@@ -3,3 +3,15 @@ backend/pw.txt
 backend/token.txt
 backend/visitors.txt
 *.db
+frontend/temperature/dist/css/app.01dce12f.css
+frontend/temperature/dist/css/app.525bc39f.css
+frontend/temperature/dist/index.html
+frontend/temperature/dist/js/app.969ab8e2.js
+frontend/temperature/dist/js/app.969ab8e2.js.map
+frontend/temperature/dist/js/app.ba283706.js
+frontend/temperature/dist/js/app.ba283706.js.map
+frontend/temperature/dist/js/chunk-vendors.d1541537.js.map
+frontend/temperature/dist/js/chunk-vendors.d1541537.js
+frontend/temperature/dist/js/chunk-vendors.ed9a5caf.js.map
+frontend/temperature/dist/js/chunk-vendors.ed9a5caf.js
+frontend/temperature/src/data.json
