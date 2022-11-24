@@ -126,7 +126,7 @@ export default {
       })
         .then((response) => response.json())
         .then((data) => {
-          if (this.page < data) {
+          if (this.page < data.last_page) {
             this.page++;
             this.getData();
           }
@@ -156,7 +156,7 @@ export default {
         },
       })
         .then((response) => response.json())
-        .then((data) => (this.page = data))
+        .then((data) => (this.page = data.last_page))
         .then(() => this.getData());
     },
 

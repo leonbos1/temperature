@@ -5,7 +5,8 @@ def main():
     while True:
         conn = sqlite3.connect('data.db')
         cur = conn.cursor()
-        cur.execute("SELECT degrees, date, time FROM temperatures LIMIT 40500")
+        #select last 40500 records
+        cur.execute("SELECT degrees, date, time FROM data ORDER BY id DESC LIMIT 40500")
 
         data = cur.fetchall()
 
