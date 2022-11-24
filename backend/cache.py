@@ -3,7 +3,7 @@ from time import sleep
 
 def main():
     while True:
-        sleep(60)
+        #sleep(60)
         conn = sqlite3.connect('data.db')
         cur = conn.cursor()
         #select last 40500 records
