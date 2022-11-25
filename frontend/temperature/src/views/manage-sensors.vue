@@ -53,7 +53,7 @@
 import datajson from "../data.json";
 
 export default {
-  name: "ManageTempsPage",
+  name: "ManageSensorsPage",
 
   mounted() {
     this.setDates();

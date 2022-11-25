@@ -35,7 +35,8 @@ temperature_fields = {
     'id': fields.Integer,
     'degrees': fields.Float,
     'date': fields.String,
-    'time': fields.String
+    'time': fields.String,
+    'sensor_id': fields.Integer,
 }
 
 date_fields = {
@@ -123,10 +124,6 @@ def token_required(f):
     return decorator
 
 class Temperature(Resource):
-    def __init__(self):
-        self.conn = sqlite3.connect('data.db')
-        self.cur = self.conn.cursor()
-        self.sensor_fails = 0
   
     @marshal_with(temperature_fields)
     def get(self):
