@@ -15,6 +15,7 @@ export default {
     return {
       data: [],
       url: datajson['url'],
+      sensor_id: 1,
     };
   },
 
@@ -28,7 +29,7 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/temperature/weekly", {
+      fetch(this.url + "/temperature/weekly?sensor_id="+this.sensor_id, {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })

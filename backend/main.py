@@ -41,7 +41,7 @@ temperature_fields = {
 
 date_fields = {
     'date': fields.String,
-    'time': fields.String
+    'time': fields.String,
 }
 
 class UserModel(db.Model):
@@ -56,7 +56,7 @@ user_fields = {
     'id': fields.Integer,
     'username': fields.String,	
     'password': fields.String,
-    'last_login': fields.String
+    'last_login': fields.String,
 }
 
 class SensorModel(db.Model):
@@ -71,10 +71,12 @@ class AverageTemperatures(db.Model):
     __tablename__ = 'average_temperatures'
     date = db.Column(db.String, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
 average_fields = {
     'date': fields.String,
-    'degrees': fields.Float
+    'degrees': fields.Float,
+    'sensor_id': fields.Integer,
 }
 
 class ExtraModel(db.Model):
@@ -289,8 +291,8 @@ class Login(Resource):
 def daily():
     #TODO run this in production to update legacy entries
     # TemperatureModel.query.filter_by(sensor_id=None).update({TemperatureModel.sensor_id: 1})
+    # AverageTemperatures.query.filter_by(sensor_id=None).update({AverageTemperatures.sensor_id: 1})
     # db.session.commit()
-    #
     sensor_id = request.args.get('sensor_id', 1, type=int)
     result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date==datetime.date.today()).all()
     data = []
@@ -322,17 +324,20 @@ def check_login():
 @marshal_with(average_fields)
 def weekly():
     #last 7 days
-    data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today() - datetime.timedelta(days=7)).all()
+    sensor_id = request.args.get('sensor_id', 1, type=int)
+    data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today() - datetime.timedelta(days=7)).filter_by(sensor_id=sensor_id).all()
     return data, 200
 
 @app.route('/temperature/monthly')
 @marshal_with(average_fields)
 def monthly():
-    data = AverageTemperatures.query.all()
+    sensor_id = request.args.get('sensor_id', 1, type=int)
+    data = AverageTemperatures.query.filter_by(sensor_id=sensor_id).all()
     return data, 200
 
 @app.route('/temperature/current')
 def current_temperature():
+    #TODO figure out a way to make this work with multiple sensors
     result = TemperatureModel.query.order_by(TemperatureModel.id.desc()).limit(3).all()
     temp = 0
     for i in result:
@@ -361,6 +366,7 @@ def current_temperature():
 
 @app.route('/visitors', methods=['POST'])
 def update_visitors():
+    #TODO fix this
     t = open("visitors.txt","r")
     visitors = t.readlines()[0]
     t.close()
@@ -368,9 +374,7 @@ def update_visitors():
     f = open("visitors.txt","w")
     f.write(str(int(visitors) + 1))
     f.close()
-
-
-
+    #make it return a json atleast
     return int(visitors) + 1, 200
 
 @app.route('/dates')

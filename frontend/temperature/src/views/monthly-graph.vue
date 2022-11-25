@@ -15,6 +15,7 @@
       return {
         data: [],
         url: datajson['url'],
+        sensor_id: 1,
       };
     },
   
@@ -28,7 +29,7 @@
   
     methods: { 
       getData() {
-        fetch(this.url + "/temperature/monthly", {
+        fetch(this.url + "/temperature/monthly?sensor_id="+this.sensor_id, {
           method: "GET",
           headers: { token: localStorage.getItem("token")},
         })
