@@ -17,6 +17,7 @@ export default {
       dailyData: [],
       temps: [],
       url: datajson['url'],
+      sensor_id: 1,
     };
   },
 
@@ -30,7 +31,7 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/temperature/daily", {
+      fetch(this.url + "/temperature/daily?sensor_id="+this.sensor_id, {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })

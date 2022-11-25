@@ -29,6 +29,7 @@ class TemperatureModel(db.Model):
     degrees = db.Column(db.Float(precision=2))
     date = db.Column(db.String)
     time = db.Column(db.String)
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
 temperature_fields = {
     'id': fields.Integer,
@@ -129,16 +130,17 @@ class Temperature(Resource):
   
     @marshal_with(temperature_fields)
     def get(self):
-        headers = request.headers
-        page = int(headers['page'])
-        per_page = int(headers['per_page'])
-        date = headers['selected_date']
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 1, type=int)
+        date = request.args.get('selected_date', 1, type=str)
+        sensor_id = request.args.get('sensor_id', 1, type=int)
+
+        #TODO filter by sensor id
         if date == '':
             data = TemperatureModel.query.paginate(page=page, per_page=per_page)
             return data.items, 200
 
         else:
-            date = headers['selected_date']
             data = TemperatureModel.query.filter_by(date=date).all()
             return data, 200
 
@@ -148,6 +150,7 @@ class Temperature(Resource):
         input_json = request.get_json(force=True)
  
         temp = round(float(input_json['degrees']), 2)
+        sensor_id = input_json['sensor_id']
 
         #if json does not have date
         if 'date' not in input_json or input_json['date'] == "":
@@ -161,7 +164,7 @@ class Temperature(Resource):
             time = input_json['time']
 
 
-        data = TemperatureModel(degrees=temp, date=date, time=time)
+        data = TemperatureModel(degrees=temp, date=date, time=time, sensor_id=sensor_id)
         db.session.add(data)
         db.session.commit()
 
@@ -186,23 +189,26 @@ class Temperature(Resource):
         input_json = request.get_json(force=True)
         id = input_json['id']
         degrees = input_json['degrees']
+        sensor_id = input_json['sensor_id']
         data = TemperatureModel.query.filter_by(id=id).first()
         if data:
             data.degrees = degrees
+            data.sensor_id = sensor_id
             db.session.commit()
             return "succes", 200
         return "unauthorized", 401
 
 @app.route('/last_page')
 def pagination():
-    headers = request.headers
-    page = int(headers['page'])
-    per_page = int(headers['per_page'])
-    date = headers['selected_date']
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 1, type=int)
+    date = request.args.get('selected_date', 1, type=str)
+    sensor_id = request.args.get('sensor_id', 1, type=int)
+
     if date == '':
-        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+        data = TemperatureModel.query.paginate(page=page, per_page=per_page).filter_by(sensor_id=sensor_id)
     else:
-        data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
+        data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page).filter_by(sensor_id=sensor_id)
 
     p = data.total/per_page
     #return a json
@@ -284,7 +290,12 @@ class Login(Resource):
 @app.route('/temperature/daily')
 @marshal_with(temperature_fields)
 def daily():
-    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
+    #TODO run this in production to update legacy entries
+    # TemperatureModel.query.filter_by(sensor_id=None).update({TemperatureModel.sensor_id: 1})
+    # db.session.commit()
+    #
+    sensor_id = request.args.get('sensor_id', 1, type=int)
+    result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date==datetime.date.today()).all()
     data = []
     temp = 0
     counter = 0
@@ -361,7 +372,9 @@ def update_visitors():
     f.write(str(int(visitors) + 1))
     f.close()
 
-    return int(visitors) + 1
+
+
+    return int(visitors) + 1, 200
 
 @app.route('/dates')
 @marshal_with(date_fields)

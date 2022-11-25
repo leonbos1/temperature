@@ -68,6 +68,7 @@ export default {
       newTemp: "",
       newDate: "",
       newTime: "",
+      newSensorId: 1,
 
     };
   },
