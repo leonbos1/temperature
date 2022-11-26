@@ -1,5 +1,18 @@
 <template>
   <div class="graph-container">
+    <ChooseSensor
+      @ready="
+        (sensorsList) => {
+          sensors.push(sensorsList);
+        }
+      "
+      @sensorId="
+        (sensorId) => {
+          sensor_id = sensorId;
+          this.getData();
+        }
+      "
+    />
     <canvas id="weekly-graph"></canvas>
   </div>
 </template>
@@ -7,15 +20,22 @@
 <script>
 import Chart from "chart.js/auto";
 import datajson from "../data.json";
+import ChooseSensor from "./choose-sensor.vue";
 
 export default {
   name: "WeeklyGraph",
 
+  components: {
+    ChooseSensor,
+  },
+
   data: function () {
     return {
       data: [],
-      url: datajson['url'],
+      url: datajson["url"],
       sensor_id: 1,
+      sensors: [],
+      myChart: null,
     };
   },
 
@@ -29,43 +49,45 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/temperature/weekly?sensor_id="+this.sensor_id, {
+      fetch(this.url + "/temperature/weekly?sensor_id=" + this.sensor_id, {
         method: "GET",
-        headers: { token: localStorage.getItem("token")},
+        headers: { token: localStorage.getItem("token") },
       })
         .then((response) => response.json())
         .then((data) => (this.data = data))
         .then(() => this.setTemps())
         .then(() => this.setLabels())
-        .then(() => this.createGraph())
+        .then(() => this.createGraph());
     },
 
     setTemps() {
       let temps = [];
 
       this.data.forEach((element) => {
-          temps.push(element['degrees']);
-        }
-      );
-      this.temps = temps; 
+        temps.push(element["degrees"]);
+      });
+      this.temps = temps;
     },
 
     setLabels() {
       let labels = [];
 
       this.data.forEach((element) => {
-        labels.push(element['date']);
-        }
-      );
+        labels.push(element["date"]);
+      });
       this.labels = labels;
     },
 
     createGraph() {
+      if (this.myChart) {
+        this.myChart.destroy();
+      }
+
       const ctx = document.getElementById("weekly-graph");
 
       const labels = this.labels;
 
-      const myChart = new Chart(ctx, {
+      this.myChart = new Chart(ctx, {
         type: "line",
         data: {
           labels: labels,
@@ -80,15 +102,15 @@ export default {
           ],
         },
         options: {
-           plugins: {
-                title: {
-                    display: true,
-                    text: "Temperatuur afgelopen week",
-                    font: {
-                        size: 32
-                    }
-                }
+          plugins: {
+            title: {
+              display: true,
+              text: "Temperatuur afgelopen week",
+              font: {
+                size: 32,
+              },
             },
+          },
           responsive: true,
           maintainAspectRatio: false,
           scales: {
@@ -98,7 +120,7 @@ export default {
           },
         },
       });
-      myChart;
+      this.myChart;
     },
   },
 };
@@ -106,7 +128,7 @@ export default {
 
 <style scoped>
 .graph-container {
-    width: 100%;
-    height: 60vh;
+  width: 100%;
+  height: 60vh;
 }
 </style>

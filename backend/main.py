@@ -67,6 +67,14 @@ class SensorModel(db.Model):
     last_temp = db.Column(db.Float(precision=2))
     last_send = db.Column(db.String)
 
+sensor_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'location': fields.String,
+    'last_temp': fields.Float,
+    'last_send': fields.String,
+}
+
 class AverageTemperatures(db.Model):
     __tablename__ = 'average_temperatures'
     date = db.Column(db.String, primary_key=True)
@@ -337,29 +345,21 @@ def monthly():
 
 @app.route('/temperature/current')
 def current_temperature():
-    #TODO figure out a way to make this work with multiple sensors
-    result = TemperatureModel.query.order_by(TemperatureModel.id.desc()).limit(3).all()
-    temp = 0
-    for i in result:
-        temp += i.degrees
-    current_temp = round(temp/3, 2)
+    #current temperature is de average of the last 5 entries
+    current_temperature = 0
+    sensor_id = request.args.get('sensor_id', 1, type=int)
+    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).order_by(TemperatureModel.id.desc()).limit(5).all()
+    for i in data:
+        current_temperature += i.degrees
+    current_temperature = current_temperature/5
 
-    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today()).all()
-    temps_today = []
-    for i in result:
-        temps_today.append(i.degrees)
-    daily_average = round(sum(temps_today)/len(temps_today), 2)
-
-    result = TemperatureModel.query.filter(TemperatureModel.date==datetime.date.today() - datetime.timedelta(days=1)).all()
-    temps_yesterday = []
-    for i in result:
-        temps_yesterday.append(i.degrees)
-    average_yesterday = round(sum(temps_yesterday)/len(temps_yesterday), 2)
+    average_today = 0
+    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date==datetime.date.today()).all()
 
     data = {
-        'current_temp': current_temp,
-        'daily_average': daily_average,
-        'average_yesterday': average_yesterday
+        'current_temp': round(current_temperature, 2),
+        'daily_average': 1,
+        'average_yesterday': 1
     }
     
     return data, 200
@@ -375,13 +375,22 @@ def update_visitors():
     f.write(str(int(visitors) + 1))
     f.close()
     #make it return a json atleast
-    return int(visitors) + 1, 200
+    visit_data = {
+        'visitors': int(visitors)+1
+    }
+    return visit_data, 200
 
 @app.route('/dates')
 @marshal_with(date_fields)
 def dates():
     dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
     return dates, 200
+
+@app.route('/sensors')
+@marshal_with(sensor_fields)
+def get_sensors():
+    sensors = SensorModel.query.all()
+    return sensors, 200
 
 api.add_resource(Temperature, "/")
 api.add_resource(Login, "/login")

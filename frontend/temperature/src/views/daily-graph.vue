@@ -1,5 +1,18 @@
 <template>
   <div class="graph-container">
+    <ChooseSensor
+      @ready="
+        (sensorsList) => {
+          sensors.push(sensorsList);
+        }
+      "
+      @sensorId="
+        (sensorId) => {
+          sensor_id = sensorId;
+          this.getData();
+        }
+      "
+    />
     <canvas id="daily-graph"></canvas>
   </div>
 </template>
@@ -7,8 +20,12 @@
 <script>
 import Chart from "chart.js/auto";
 import datajson from "../data.json";
+import ChooseSensor from "./choose-sensor.vue";
 
 export default {
+  components: {
+    ChooseSensor,
+  },
   name: "DailyGraph",
 
   data: function () {
@@ -16,8 +33,10 @@ export default {
       data: [],
       dailyData: [],
       temps: [],
-      url: datajson['url'],
+      url: datajson["url"],
       sensor_id: 1,
+      sensors: [],
+      myChart: null,
     };
   },
 
@@ -31,9 +50,9 @@ export default {
 
   methods: {
     getData() {
-      fetch(this.url + "/temperature/daily?sensor_id="+this.sensor_id, {
+      fetch(this.url + "/temperature/daily?sensor_id=" + this.sensor_id, {
         method: "GET",
-        headers: { token: localStorage.getItem("token")},
+        headers: { token: localStorage.getItem("token") },
       })
         .then((response) => response.json())
         .then((data) => (this.data = data))
@@ -45,27 +64,37 @@ export default {
     setTemps() {
       let temps = [];
       this.data.forEach((element) => {
-        temps.push(element['degrees']);
-        }
-      );
+        temps.push(element["degrees"]);
+      });
       this.temps = temps;
     },
 
     setLabels() {
       let labels = [];
       this.data.forEach((element) => {
-        labels.push(element['time']);
-        }
-      );
+        labels.push(element["time"]);
+      });
       this.labels = labels;
     },
 
+    // getSensors() {
+    //   fetch(this.url + "/sensors", {
+    //     method: "GET",
+    //     headers: { token: localStorage.getItem("token")},
+    //   })
+    //     .then((response) => response.json())
+    //     .then((data) => (this.sensors = data));
+    // },
+
     createGraph() {
+      if (this.myChart) {
+        this.myChart.destroy();
+      }
       const ctx = document.getElementById("daily-graph");
 
       const labels = this.labels;
 
-      const myChart = new Chart(ctx, {
+      this.myChart = new Chart(ctx, {
         type: "line",
         data: {
           labels: labels,
@@ -98,7 +127,7 @@ export default {
           },
         },
       });
-      myChart;
+      this.myChart;
     },
   },
 };

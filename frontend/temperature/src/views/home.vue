@@ -2,7 +2,6 @@
   <div>
   <Visitors class="visitors"/>
   <CurrentTemp/>
-  
   </div>
 </template>
 
@@ -10,6 +9,7 @@
 
 import CurrentTemp from './current-temp.vue'
 import Visitors from './visitors.vue';
+import data from "../data.json";
 
 export default {
 
@@ -18,8 +18,14 @@ export default {
 
   components: {
     CurrentTemp,
-    Visitors
+    Visitors,
 },
+
+  data: function () {
+    return {
+      url: data["url"],
+    };
+  },
 };
 </script>
 
