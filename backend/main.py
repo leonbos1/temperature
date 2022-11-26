@@ -392,6 +392,44 @@ def get_sensors():
     sensors = SensorModel.query.all()
     return sensors, 200
 
+@app.route('/sensors', methods=['POST'])
+def add_sensor():
+    input_json = request.get_json(force=True)
+    name = input_json['name']
+    location = input_json['location']
+    sensor = SensorModel(
+        name=name,
+        location=location
+    )
+    db.session.add(sensor)
+    db.session.commit()
+    return "succes", 200
+
+@app.route('/sensors', methods=['DELETE'])
+def delete_sensor():
+    input_json = request.get_json(force=True)
+    id = input_json['id']
+    sensor = SensorModel.query.filter_by(id=id).first()
+    if sensor:
+        db.session.delete(sensor)
+        db.session.commit()
+        return "succes", 200
+    return "Sensor not found", 404
+
+@app.route('/sensors', methods=['PUT'])
+def update_sensor():
+    input_json = request.get_json(force=True)
+    id = input_json['id']
+    name = input_json['name']
+    location = input_json['location']
+    sensor = SensorModel.query.filter_by(id=id).first()
+    if sensor:
+        sensor.name = name
+        sensor.location = location
+        db.session.commit()
+        return "succes", 200
+    return "Sensor not found", 404
+
 api.add_resource(Temperature, "/")
 api.add_resource(Login, "/login")
 api.add_resource(User, "/user")

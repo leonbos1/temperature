@@ -1,47 +1,40 @@
 <template>
   <div class="table-container">
-    <div>
-      <select class="dropdown" @change="getData" v-model="date">
-        <option value="">All</option>
-        <option v-for="date in dates" :key="date" :value="date">
-          {{ date }}
-        </option>
-      </select>
-    </div>
-    <div class="page">
-      <button @click="firstPage">First</button>
-      <button @click="prevPage">Previous</button>
-      <input v-model="page"/>
-      <button @click="nextPage">Next</button>
-      <button @click="lastPage">Last</button>
-    </div>
     <table>
       <thead>
         <tr>
           <th scope="col">ID</th>
-          <th scope="col">Temp</th>
-          <th scope="col">Date</th>
-          <th scope="col">Time</th>
-          <th scope="col">Sensor id</th>
+          <th scope="col">Name</th>
+          <th scope="col">Location</th>
+          <th scope="col">last_temp</th>
+          <th scope="col">last_send</th>
           <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="d in data" v-bind:key="d">
-          <td>{{ d.id }}</td>
-          <input type="text" v-model="d.degrees" />
-          <td>{{ d.date }}</td>
-          <td>{{ d.time }}</td>
-          <td>{{ d.sensor_id }}</td>
-          <button @click="editRecord(d.id, d.degrees)" class="edit">Edit</button>
-          <button @click="deleteRecord(d.id)" class="delete">Delete</button>
+        <tr v-for="sensor in sensors" v-bind:key="sensor.id">
+          <td>{{ sensor.id }}</td>
+          <td><input type="text" v-model="sensor.name" /> </td>
+          <td><input type="text" v-model="sensor.location" /></td>
+          <td>{{ sensor.last_temp }}</td>
+          <td>{{ sensor.last_send }}</td>
+          <button
+            @click="editRecord(sensor.id, sensor.name, sensor.location)"
+            class="edit"
+          >
+            Edit
+          </button>
+          <button @click="deleteRecord(sensor.id)" class="delete">
+            Delete
+          </button>
         </tr>
+
         <tr>
           <td></td>
-          <td><input type="text" v-model="newTemp" /></td>
-          <td><input type="text" v-model="newDate" /></td>
-          <td><input type="text" v-model="newTime" /></td>
-          <td><input type="text" v-model="newSensorId" /></td>
+          <td><input type="text" v-model="newName" /></td>
+          <td><input type="text" v-model="newLocation" /></td>
+          <td></td>
+          <td></td>
           <button @click="addRecord" class="add">Add</button>
         </tr>
       </tbody>
@@ -56,114 +49,35 @@ export default {
   name: "ManageSensorsPage",
 
   mounted() {
-    this.setDates();
-    this.getData()
+    this.getData();
   },
 
   data: function () {
     return {
-      data: [],
-      page: 1,
-      perPage: 50,
+      sensors: [],
       url: datajson["url"],
-      dates: [],
-      date: "",
-      newTemp: "",
-      newDate: "",
-      newTime: "",
-      newSensorId: 1,
-
+      newName: "",
+      newLocation: "",
     };
   },
   methods: {
     getData() {
-      fetch(this.url + "/?page="+this.page+"&per_page="+this.perPage+"&sensor_id="+this.sensor_id+"&selected_date="+this.date, {
+      fetch(this.url + "/sensors", {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-        },
-      })
-        .then((response) => {
-          if (response.status == 404) {
-            this.page--;
-            this.getData();
-          }
-          else {
-            return response.json();
-          }
-        })
-        .then((data) => (this.data = data))
-    },
-
-    setDates() {
-      this.dates = [];
-      fetch(this.url+"/dates?page="+this.page+"&per_page="+this.perPage, {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        for (var i = 0; i < data.length; i++) {
-          if (!this.dates.includes(data[i].date)) {
-            this.dates.push(data[i].date);
-          }
-        }
-      })
-    },
-
-    nextPage() {
-      fetch(this.url + "/last_page", {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-          page : this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
         },
       })
         .then((response) => response.json())
-        .then((data) => {
-          if (this.page < data.last_page) {
-            this.page++;
-            this.getData();
-          }
-        });
-    },
 
-    prevPage() {
-      if (this.page > 1) {
-        this.page --;
-        this.getData();
-      }
-    },
-
-    firstPage() {
-      this.page = 1;
-      this.getData();
-    },
-
-    lastPage() {
-      fetch(this.url + "/last_page", {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-          page: this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => (this.page = data.last_page))
-        .then(() => this.getData());
+        .then((data) => (this.sensors = data));
     },
 
     deleteRecord(id) {
-      fetch(this.url, {
+      fetch(this.url+"/sensors", {
         method: "DELETE",
         headers: {
-          'x-access-tokens': localStorage.getItem("token"),
+          "x-access-tokens": localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
@@ -171,33 +85,33 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, degrees) {
-      fetch(this.url, {
+    editRecord(id, name, location) {
+      fetch(this.url+"/sensors", {
         method: "PUT",
         headers: {
-          'x-access-tokens': localStorage.getItem("token"),
+          "x-access-tokens": localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
-          degrees: degrees+''
+          name: name,
+          location: location,
         }),
       }).then(() => this.getData());
     },
 
     addRecord() {
-      fetch(this.url, {
+      fetch(this.url+"/sensors", {
         method: "POST",
         headers: {
           token: localStorage.getItem("token"),
         },
         body: JSON.stringify({
-          degrees: this.newTemp,
-          date: this.newDate,
-          time: this.newTime,
+          name: this.newName,
+          location: this.newLocation,
         }),
       }).then(() => this.getData());
     },
-  }
+  },
 };
 </script>
 
@@ -287,7 +201,6 @@ input {
 
 option {
   text-align: center;
-
 }
 </style>
  
