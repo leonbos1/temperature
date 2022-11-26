@@ -1,7 +1,7 @@
 <template>
   <div class="table-container">
     <div>
-      <select class="dropdown" @change="getData" v-model="date">
+      <select class="dropdown" @change="changeDate" v-model="date">
         <option value="">All</option>
         <option v-for="date in dates" :key="date" :value="date">
           {{ date }}
@@ -65,6 +65,7 @@ export default {
       data: [],
       page: 1,
       perPage: 50,
+      sensor_id: 1,
       url: datajson["url"],
       dates: [],
       date: "",
@@ -93,6 +94,11 @@ export default {
           }
         })
         .then((data) => (this.data = data))
+    },
+
+    changeDate() {
+      this.page = 1;
+      this.getData();
     },
 
     setDates() {
@@ -145,13 +151,10 @@ export default {
     },
 
     lastPage() {
-      fetch(this.url + "/last_page", {
+      fetch(this.url + "/last_page?page="+this.page+"&per_page="+this.perPage+"&selected_date="+this.date+"&sensor_id="+this.sensor_id, {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-          page: this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
         },
       })
         .then((response) => response.json())
