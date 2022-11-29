@@ -297,12 +297,9 @@ class Login(Resource):
 @app.route('/temperature/daily')
 @marshal_with(temperature_fields)
 def daily():
-    #TODO run this in production to update legacy entries
-    # TemperatureModel.query.filter_by(sensor_id=None).update({TemperatureModel.sensor_id: 1})
-    # AverageTemperatures.query.filter_by(sensor_id=None).update({AverageTemperatures.sensor_id: 1})
-    # db.session.commit()
     sensor_id = request.args.get('sensor_id', 1, type=int)
-    result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date==datetime.date.today()).all()
+    result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
+
     data = []
     temp = 0
     counter = 0
