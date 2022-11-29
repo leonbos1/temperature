@@ -2,7 +2,6 @@
 backend/pw.txt
 backend/token.txt
 backend/visitors.txt
-*.db
 frontend/temperature/dist/css/app.01dce12f.css
 frontend/temperature/dist/css/app.525bc39f.css
 frontend/temperature/dist/index.html

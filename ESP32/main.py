@@ -25,6 +25,7 @@ def send_temp(temperature):
     url = "http://ronleon.nl:5000/"
  
     data = {
+        'sensor':2,
         'degrees':temperature
         }
     json_object = json.dumps(data)

@@ -7,6 +7,7 @@
         <li><a href="/monthly">Monthly</a></li>
         <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
         <li v-if="loggedIn"><a href="/manageusers">Manage users</a></li>
+        <li v-if="loggedIn"><a href="/managesensors">Manage sensors</a></li>
         <li class="right" v-if="!loggedIn"><a href="/login">Login</a></li>
         <li class="right" v-if="loggedIn" @click="logout"><a>Logout</a></li>
       </ul>
