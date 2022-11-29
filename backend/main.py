@@ -157,7 +157,7 @@ class Temperature(Resource):
         temp = round(float(input_json['degrees']), 2)
         sensor_id = input_json['sensor_id']
 
-        #if json does not have date
+        #if json does not have date, this is for manually adding data in management page
         if 'date' not in input_json or input_json['date'] == "":
             date = datetime.date.today()
         else:
