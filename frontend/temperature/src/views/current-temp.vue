@@ -3,16 +3,33 @@
     <p>Huidige temperatuur: {{ currentTemp }} graden</p>
     <p>Gemiddelde temperatuur vandaag: {{ avgToday }} graden</p>
     <p>Gemiddelde temperatuur gisteren: {{ avgyesterday }} graden</p>
+    <ChooseSensor
+      @ready="
+        (sensorsList) => {
+          sensors.push(sensorsList);
+        }
+      "
+      @sensorId="
+        (sensorId) => {
+          sensor_id = sensorId;
+        }
+      "
+    />
   </div>
 </template>
 
 <script>
 
 import datajson from "../data.json";
+import ChooseSensor from "./choose-sensor.vue";
 
 export default {
 
   name: "CurrentTemp",
+
+  components: {
+    ChooseSensor,
+  },
 
   data: function () {
     return {
@@ -21,12 +38,18 @@ export default {
       avgyesterday: 0,
       data: [],
       url: datajson['url'],
+      sensor_id: 1,
+      sensors: [],
     };
   },
   methods: {
 
+    debug() {
+      console.log(this.sensor_id);
+    },
+
     getData() {
-      fetch(this.url + "/temperature/current", {
+      fetch(this.url + "/temperature/current?sensor_id="+this.sensor_id, {
         method: "GET",
         headers: { token: localStorage.getItem("token")},
       })

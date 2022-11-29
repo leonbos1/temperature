@@ -1,7 +1,7 @@
 <template>
   <div class="table-container">
     <div>
-      <select class="dropdown" @change="getData" v-model="date">
+      <select class="dropdown" @change="changeDate" v-model="date">
         <option value="">All</option>
         <option v-for="date in dates" :key="date" :value="date">
           {{ date }}
@@ -22,6 +22,7 @@
           <th scope="col">Temp</th>
           <th scope="col">Date</th>
           <th scope="col">Time</th>
+          <th scope="col">Sensor id</th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -31,6 +32,7 @@
           <input type="text" v-model="d.degrees" />
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
+          <td>{{ d.sensor_id }}</td>
           <button @click="editRecord(d.id, d.degrees)" class="edit">Edit</button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
         </tr>
@@ -39,6 +41,7 @@
           <td><input type="text" v-model="newTemp" /></td>
           <td><input type="text" v-model="newDate" /></td>
           <td><input type="text" v-model="newTime" /></td>
+          <td><input type="text" v-model="newSensorId" /></td>
           <button @click="addRecord" class="add">Add</button>
         </tr>
       </tbody>
@@ -62,24 +65,23 @@ export default {
       data: [],
       page: 1,
       perPage: 50,
+      sensor_id: 1,
       url: datajson["url"],
       dates: [],
       date: "",
       newTemp: "",
       newDate: "",
       newTime: "",
+      newSensorId: 1,
 
     };
   },
   methods: {
     getData() {
-      fetch(this.url + "/", {
+      fetch(this.url + "/?page="+this.page+"&per_page="+this.perPage+"&sensor_id="+this.sensor_id+"&selected_date="+this.date, {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-          page: this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
         },
       })
         .then((response) => {
@@ -94,14 +96,17 @@ export default {
         .then((data) => (this.data = data))
     },
 
+    changeDate() {
+      this.page = 1;
+      this.getData();
+    },
+
     setDates() {
       this.dates = [];
-      fetch(this.url+"/dates", {
+      fetch(this.url+"/dates?page="+this.page+"&per_page="+this.perPage, {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-          page: this.page,
-          per_page: this.perPage,
         },
       })
       .then((response) => response.json())
@@ -146,13 +151,10 @@ export default {
     },
 
     lastPage() {
-      fetch(this.url + "/last_page", {
+      fetch(this.url + "/last_page?page="+this.page+"&per_page="+this.perPage+"&selected_date="+this.date+"&sensor_id="+this.sensor_id, {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
-          page: this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
         },
       })
         .then((response) => response.json())

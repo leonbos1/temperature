@@ -6,6 +6,7 @@ import Login from '../views/login.vue'
 import Daily from '../views/daily-graph.vue'	
 import Weekly from '../views/weekly-graph.vue'	
 import Monthly from '../views/monthly-graph.vue'	
+import ManageSensors from '../views/manage-sensors.vue'
 const routes = [
     {
         path: '/',
@@ -50,6 +51,19 @@ const routes = [
             }
             else {
                 next("/login")
+            }
+        }
+    },
+    {
+        path: '/managesensors',
+        name: 'ManageSensors',
+        component: ManageSensors,
+        beforeEnter: (_to,_from,next) => {
+            if (localStorage.getItem("token")) {
+                next()
+            }
+            else {
+                next("/login") 
             }
         }
     },
