@@ -143,8 +143,17 @@ class Temperature(Resource):
         sensor_id = request.args.get('sensor_id', 1, type=int)
 
         #TODO filter by sensor id
-        if date == '':
+        if date:
             data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+            return data.items, 200
+        
+        if sensor_id:
+            data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+            return data.items, 200
+
+        if date and sensor_id:
+            data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+            print("here")
             return data.items, 200
 
         else:
@@ -203,19 +212,21 @@ class Temperature(Resource):
             return "succes", 200
         return "unauthorized", 401
 
-@app.route('/last_page')
+@app.route('/last_page', methods=['GET'])
 def pagination():
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 1, type=int)
+    page = request.args.get('page', 0, type=int)
+    per_page = request.args.get('per_page', 0, type=int)
     date = request.args.get('selected_date', '', type=str)
-    sensor_id = request.args.get('sensor_id', 1, type=int)
+    sensor_id = request.args.get('sensor_id', 0, type=int)
 
-    if date == '':
-        print("date is empty")
-        data = TemperatureModel.query.paginate(page=page, per_page=per_page)
-    else:
-        print("date is not empty")
+    data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+    
+    if date:
         data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
+    if sensor_id:
+        data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+    if date and sensor_id:
+        data = TemperatureModel.query.filter_by(date=date, sensor_id=sensor_id).paginate(page=page, per_page=per_page)
 
     p = data.total/per_page
     result = jsonify({'last_page': math.ceil(p)})

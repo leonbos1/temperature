@@ -7,11 +7,17 @@
           {{ date }}
         </option>
       </select>
+      <select class="dropdown" @change="changeSensor" v-model="sensor_id">
+        <option value="">All</option>
+        <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
+          {{ sensor.location }}
+        </option>
+      </select>
     </div>
     <div class="page">
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
-      <input v-model="page"/>
+      <input v-model="page" />
       <button @click="nextPage">Next</button>
       <button @click="lastPage">Last</button>
     </div>
@@ -33,7 +39,9 @@
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
           <td>{{ d.sensor_id }}</td>
-          <button @click="editRecord(d.id, d.degrees)" class="edit">Edit</button>
+          <button @click="editRecord(d.id, d.degrees)" class="edit">
+            Edit
+          </button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
         </tr>
         <tr>
@@ -57,7 +65,8 @@ export default {
 
   mounted() {
     this.setDates();
-    this.getData()
+    this.getData();
+    this.getSensors()
   },
 
   data: function () {
@@ -68,32 +77,50 @@ export default {
       sensor_id: 1,
       url: datajson["url"],
       dates: [],
+      sensors: [],
       date: "",
       newTemp: "",
       newDate: "",
       newTime: "",
       newSensorId: 1,
-
     };
   },
   methods: {
     getData() {
-      fetch(this.url + "/?page="+this.page+"&per_page="+this.perPage+"&sensor_id="+this.sensor_id+"&selected_date="+this.date, {
+      fetch(
+        this.url +
+          "/?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&sensor_id=" +
+          this.sensor_id +
+          "&selected_date=" +
+          this.date,
+        {
+          method: "GET",
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => (this.data = data));
+    },
+
+    getSensors() {
+      fetch(this.url + "/sensors", {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),
         },
       })
         .then((response) => {
-          if (response.status == 404) {
-            this.page--;
-            this.getData();
-          }
-          else {
-            return response.json();
-          }
+          return response.json();
         })
-        .then((data) => (this.data = data))
+        .then((data) => (this.sensors = data));
     },
 
     changeDate() {
@@ -101,46 +128,43 @@ export default {
       this.getData();
     },
 
-    setDates() {
-      this.dates = [];
-      fetch(this.url+"/dates?page="+this.page+"&per_page="+this.perPage, {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        for (var i = 0; i < data.length; i++) {
-          if (!this.dates.includes(data[i].date)) {
-            this.dates.push(data[i].date);
-          }
-        }
-      })
+    changeSensor() {
+      this.page = 1;
+      this.getData();
     },
 
-    nextPage() {
-      fetch(this.url + "/last_page", {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-          page : this.page,
-          per_page: this.perPage,
-          selected_date: this.date,
-        },
-      })
+    setDates() {
+      this.dates = [];
+      fetch(
+        this.url + "/dates?page=" + this.page + "&per_page=" + this.perPage,
+        {
+          method: "GET",
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
-          if (this.page < data.last_page) {
-            this.page++;
-            this.getData();
+          for (var i = 0; i < data.length; i++) {
+            if (!this.dates.includes(data[i].date)) {
+              this.dates.push(data[i].date);
+            }
           }
         });
     },
 
+    nextPage() {
+      if (this.page < this.last_page) {
+        this.page++;
+        this.getData();
+      }
+      console.log(this.last_page);
+    },
+
     prevPage() {
       if (this.page > 1) {
-        this.page --;
+        this.page--;
         this.getData();
       }
     },
@@ -151,14 +175,26 @@ export default {
     },
 
     lastPage() {
-      fetch(this.url + "/last_page?page="+this.page+"&per_page="+this.perPage+"&sensor_id="+this.sensor_id, {
-        method: "GET",
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      })
+      fetch(
+        this.url +
+          "/last_page?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&sensor_id=" +
+          this.sensor_id,
+        {
+          method: "GET",
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      )
         .then((response) => response.json())
-        .then((data) => (this.page = data.last_page))
+        .then((data) => {
+          this.page = data.last_page;
+          this.last_page = data.last_page;
+        })
         .then(() => this.getData());
     },
 
@@ -166,7 +202,7 @@ export default {
       fetch(this.url, {
         method: "DELETE",
         headers: {
-          'x-access-tokens': localStorage.getItem("token"),
+          "x-access-tokens": localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
@@ -178,11 +214,11 @@ export default {
       fetch(this.url, {
         method: "PUT",
         headers: {
-          'x-access-tokens': localStorage.getItem("token"),
+          "x-access-tokens": localStorage.getItem("token"),
         },
         body: JSON.stringify({
           id: id,
-          degrees: degrees+''
+          degrees: degrees + "",
         }),
       }).then(() => this.getData());
     },
@@ -200,7 +236,7 @@ export default {
         }),
       }).then(() => this.getData());
     },
-  }
+  },
 };
 </script>
 
@@ -290,7 +326,7 @@ input {
 
 option {
   text-align: center;
-
 }
+
 </style>
  

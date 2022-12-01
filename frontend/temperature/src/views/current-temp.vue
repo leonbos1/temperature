@@ -3,17 +3,8 @@
     <p>Huidige temperatuur: {{ currentTemp }} graden</p>
     <p>Gemiddelde temperatuur vandaag: {{ avgToday }} graden</p>
     <p>Gemiddelde temperatuur gisteren: {{ avgyesterday }} graden</p>
-    <ChooseSensor
-      @ready="
-        (sensorsList) => {
-          sensors.push(sensorsList);
-        }
-      "
-      @sensorId="
-        (sensorId) => {
-          sensor_id = sensorId;
-        }
-      "
+    <choose-sensor
+      :sensors="sensors"
     />
   </div>
 </template>
@@ -39,15 +30,9 @@ export default {
       data: [],
       url: datajson['url'],
       sensor_id: 1,
-      sensors: [],
     };
   },
   methods: {
-
-    debug() {
-      console.log(this.sensor_id);
-    },
-
     getData() {
       fetch(this.url + "/temperature/current?sensor_id="+this.sensor_id, {
         method: "GET",
@@ -59,7 +44,6 @@ export default {
           this.currentTemp = this.data['current_temp'];
           this.avgToday = this.data['daily_average'];
           this.avgyesterday = this.data['average_yesterday'];
-          console.log(this.data);
         });
     },
   },
