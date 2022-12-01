@@ -1,6 +1,5 @@
 <template>
 <div>
-  {{this.sensorId}}
   <select class="dropdown" v-model="sensorId">
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
@@ -58,6 +57,7 @@ button {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+  height: 50px;
 }
 
 </style>
