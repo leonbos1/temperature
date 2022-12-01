@@ -151,7 +151,7 @@ export default {
     },
 
     lastPage() {
-      fetch(this.url + "/last_page?page="+this.page+"&per_page="+this.perPage+"&selected_date="+this.date+"&sensor_id="+this.sensor_id, {
+      fetch(this.url + "/last_page?page="+this.page+"&per_page="+this.perPage+"&sensor_id="+this.sensor_id, {
         method: "GET",
         headers: {
           token: localStorage.getItem("token"),

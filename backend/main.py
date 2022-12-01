@@ -207,18 +207,19 @@ class Temperature(Resource):
 def pagination():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 1, type=int)
-    date = request.args.get('selected_date', '', type=str)
+    #date = request.args.get('selected_date', '', type=str)
     sensor_id = request.args.get('sensor_id', 1, type=int)
 
-    if date == '':
+    """if date == '':
         print("date is empty")
         data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
     else:
         print("date is not empty")
         data = TemperatureModel.query.filter_by(date=date, sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+        """	
+    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
 
     p = data.total/per_page
-    print(p)
     result = jsonify({'last_page': math.ceil(p)})
     return result, 200
      
