@@ -32,10 +32,6 @@ export default {
     };
   },
 
-  props: {
-    msg: String,
-  },
-
   mounted() {
     this.getData();
   },

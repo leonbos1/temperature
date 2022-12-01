@@ -4,18 +4,21 @@
     <p>Gemiddelde temperatuur vandaag: {{ avgToday }} graden</p>
     <p>Gemiddelde temperatuur gisteren: {{ avgyesterday }} graden</p>
     <choose-sensor
-      :sensor_id="sensor_id"
+      @setSensor="
+        (sensor) => {
+          sensor_id = sensor;
+          this.getData();
+        }
+      "
     />
   </div>
 </template>
 
 <script>
-
 import datajson from "../data.json";
 import ChooseSensor from "./choose-sensor.vue";
 
 export default {
-
   name: "CurrentTemp",
 
   components: {
@@ -28,22 +31,22 @@ export default {
       avgToday: 0,
       avgyesterday: 0,
       data: [],
-      url: datajson['url'],
+      url: datajson["url"],
       sensor_id: 1,
     };
   },
   methods: {
     getData() {
-      fetch(this.url + "/temperature/current?sensor_id="+this.sensor_id, {
+      fetch(this.url + "/temperature/current?sensor_id=" + this.sensor_id, {
         method: "GET",
-        headers: { token: localStorage.getItem("token")},
+        headers: { token: localStorage.getItem("token") },
       })
         .then((response) => response.json())
         .then((data) => (this.data = data))
         .then(() => {
-          this.currentTemp = this.data['current_temp'];
-          this.avgToday = this.data['daily_average'];
-          this.avgyesterday = this.data['average_yesterday'];
+          this.currentTemp = this.data["current_temp"];
+          this.avgToday = this.data["daily_average"];
+          this.avgyesterday = this.data["average_yesterday"];
         });
     },
   },

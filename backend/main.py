@@ -360,13 +360,29 @@ def current_temperature():
         current_temperature += i.degrees
     current_temperature = current_temperature/5
 
-    average_today = 0
-    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date==datetime.date.today()).all()
+    try:
+        all_temperatures_today = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
+        average_temperature_today = 0
+        for i in all_temperatures_today:
+            average_temperature_today += i.degrees
+        average_temperature_today = average_temperature_today/len(all_temperatures_today)
+
+        average_temperature_yesteraday = 0
+        all_temperatures_yesterday = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today() - datetime.timedelta(days=1)).all()
+        for i in all_temperatures_yesterday:
+            average_temperature_yesteraday += i.degrees
+        average_temperature_yesteraday = average_temperature_yesteraday/len(all_temperatures_yesterday)
+    
+    except:
+        #TODO fix this
+        # currently, if there are no temperatures in the database today/yesterday, the api will crash because of the division by zero
+        average_temperature_today = 0
+        average_temperature_yesteraday = 0
 
     data = {
         'current_temp': round(current_temperature, 2),
-        'daily_average': 1,
-        'average_yesterday': 1
+        'daily_average': average_temperature_today,
+        'average_yesterday': average_temperature_yesteraday
     }
     
     return data, 200
