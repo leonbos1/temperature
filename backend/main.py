@@ -381,8 +381,8 @@ def current_temperature():
 
     data = {
         'current_temp': round(current_temperature, 2),
-        'daily_average': average_temperature_today,
-        'average_yesterday': average_temperature_yesteraday
+        'daily_average': round(average_temperature_today, 2),
+        'average_yesterday': round(average_temperature_yesteraday, 2)
     }
     
     return data, 200
