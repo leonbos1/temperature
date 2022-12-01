@@ -1,6 +1,6 @@
 <template>
-  <select class="dropdown" @click="getData" v-model="sensorId">
-    <option @click="sendSensorId" v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
+  <select class="dropdown" @click="sendSensorId()" v-model="sensorId">
+    <option @change="sendSensorId()" v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
     </option>
   </select>
@@ -33,6 +33,7 @@ export default {
     },
 
     sendSensorId() {
+
       this.$emit("sensorId", this.sensorId);
     },
   },
