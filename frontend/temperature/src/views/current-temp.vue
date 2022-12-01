@@ -4,7 +4,7 @@
     <p>Gemiddelde temperatuur vandaag: {{ avgToday }} graden</p>
     <p>Gemiddelde temperatuur gisteren: {{ avgyesterday }} graden</p>
     <choose-sensor
-      :sensors="sensors"
+      :sensor_id="sensor_id"
     />
   </div>
 </template>

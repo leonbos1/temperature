@@ -1,7 +1,10 @@
 <template>
   <div class="graph-container">
     <choose-sensor
-      :sensor_id="sensorId"
+    @setSensor="(sensor) => {
+      sensor_id = sensor;
+      this.getData();
+    }"
     />
     <canvas id="daily-graph"></canvas>
   </div>
