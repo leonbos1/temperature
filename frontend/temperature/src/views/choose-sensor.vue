@@ -1,4 +1,6 @@
 <template>
+<div>
+  {{this.sensorId}}
   <select class="dropdown" v-model="sensorId">
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
@@ -6,6 +8,7 @@
     
   </select>
   <button @click="sendSensorId()">Select</button>
+</div>
 </template>
 
 <script>
