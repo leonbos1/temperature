@@ -3,8 +3,9 @@
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
     </option>
-    <button @click="sendSensorId()">Select</button>
+    
   </select>
+  <button @click="sendSensorId()">Select</button>
 </template>
 
 <script>
