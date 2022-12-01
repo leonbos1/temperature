@@ -1,5 +1,5 @@
 <template>
-  <select class="dropdown" @keydown="sendSensorId()" v-model="sensorId">
+  <select class="dropdown" @mousedown="sendSensorId()" v-model="sensorId">
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
     </option>
