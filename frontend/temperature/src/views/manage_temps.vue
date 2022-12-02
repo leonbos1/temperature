@@ -257,7 +257,7 @@ export default {
 }
 .table-container td,
 th {
-  text-align: left;
+  text-align: center;
   padding: 8px;
 }
 .table-container tr:nth-child(even) {

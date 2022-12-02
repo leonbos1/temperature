@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
   <Visitors class="visitors"/>
   <CurrentTemp/>
   </div>
@@ -12,7 +12,6 @@ import Visitors from './visitors.vue';
 import data from "../data.json";
 
 export default {
-
 
   name: "HomePage",
 
@@ -31,6 +30,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+}
 
 </style>
  

@@ -389,7 +389,6 @@ def current_temperature():
 
 @app.route('/visitors', methods=['POST'])
 def update_visitors():
-    #TODO fix this
     t = open("visitors.txt","r")
     visitors = t.readlines()[0]
     t.close()
@@ -397,7 +396,6 @@ def update_visitors():
     f = open("visitors.txt","w")
     f.write(str(int(visitors) + 1))
     f.close()
-    #make it return a json atleast
     visit_data = {
         'visitors': int(visitors)+1
     }
