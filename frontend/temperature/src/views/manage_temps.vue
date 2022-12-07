@@ -1,24 +1,12 @@
 <template>
-  <div class="table-container">
-    <div>
-      <select class="dropdown" @change="changeDate" v-model="date">
-        <option value="">All</option>
-        <option v-for="date in dates" :key="date" :value="date">
-          {{ date }}
-        </option>
-      </select>
-      <select class="dropdown" @change="changeSensor" v-model="sensor_id">
-        <option value="">All</option>
-        <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
-          {{ sensor.location }}
-        </option>
-      </select>
-    </div>
+  <div class="content">
     <div class="page">
+      <div class="filter"></div>
+
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
       <input v-model="page" />
-      <button @click="nextPage">Next</button>
+      <button @click="nextPage()">Next</button>
       <button @click="lastPage">Last</button>
     </div>
     <table>
@@ -26,9 +14,27 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Temp</th>
-          <th scope="col">Date</th>
+          <th scope="col">
+            <select class="dropdown" @change="changeDate" v-model="date">
+              <option value="">All</option>
+              <option v-for="date in dates" :key="date" :value="date">
+                {{ date }}
+              </option>
+            </select>
+          </th>
           <th scope="col">Time</th>
-          <th scope="col">Sensor id</th>
+          <th scope="col">
+            <select class="dropdown" @change="changeSensor" v-model="sensor_id">
+              <option value="">All</option>
+              <option
+                v-for="sensor in sensors"
+                :key="sensor.id"
+                :value="sensor.id"
+              >
+                {{ sensor.location }}
+              </option>
+            </select>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -66,7 +72,7 @@ export default {
   mounted() {
     this.setDates();
     this.getData();
-    this.getSensors()
+    this.getSensors();
   },
 
   data: function () {
@@ -107,7 +113,32 @@ export default {
         .then((response) => {
           return response.json();
         })
-        .then((data) => (this.data = data));
+        .then((data) => (this.data = data))
+        .then(() => this.getLastPage());
+    },
+
+    getLastPage() {
+      fetch(
+        this.url +
+          "/last_page?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&sensor_id=" +
+          this.sensor_id +
+          "&selected_date=" +
+          this.date,
+        {
+          method: "GET",
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => (this.lastPage = data["last_page"]));
     },
 
     getSensors() {
@@ -155,11 +186,10 @@ export default {
     },
 
     nextPage() {
-      if (this.page < this.last_page) {
+      if (this.page < this.lastPage) {
         this.page++;
         this.getData();
       }
-      console.log(this.last_page);
     },
 
     prevPage() {
@@ -242,31 +272,21 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.table-container {
-  overflow: auto;
-  white-space: nowrap;
-  /*min-height: 70vh;*/
-}
-.table-container table {
+.content {
+  margin: 0 auto;
   width: 100%;
+  padding: 20px;
   text-align: center;
-}
-.table-container th {
-  background-color: #18b68e;
-  color: white;
-}
-.table-container td,
-th {
-  text-align: center;
-  padding: 8px;
-}
-.table-container tr:nth-child(even) {
-  background-color: #f2f2f2;
+  border: 1px solid rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 button {
   border: none;
-  color: white;
+  color: rgb(0, 0, 0);
   padding: 4px 32px;
   text-align: center;
   text-decoration: none;
@@ -274,59 +294,58 @@ button {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+  border: 1px solid rgb(0, 0, 0);
 }
+
 .delete {
   background-color: #f44336;
 }
 .edit {
   background-color: #4caf50;
 }
-
 .add {
   background-color: #2196f3;
 }
 
-div .page {
+.page {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  button {
-    background-color: #18b68e;
-  }
-  p {
-    margin-left: 1vw;
-    margin-right: 1vw;
-  }
+  width: 100%;
 }
 
-th {
-  text-align: center;
+tr {
+  border: 1px solid rgb(109, 109, 109);
 }
 
 td {
-  text-align: center;
+  border: 1px solid rgb(82, 82, 82);
 }
 
-input {
-  text-align: center;
+table {
+  border: 1px solid rgb(102, 102, 102);
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-  background-color: #18b68e;
-  color: white;
-  padding: 4px 16px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 16px;
-  margin: 2px 2px;
+select {
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  border: 1px solid rgb(0, 0, 0);
 }
 
 option {
-  text-align: center;
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f1f1f1;
 }
 
+.filters {
+  float: left;
+}
 </style>
  

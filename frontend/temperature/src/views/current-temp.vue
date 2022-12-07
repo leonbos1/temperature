@@ -1,8 +1,8 @@
 <template>
   <div class="hello">
-    <p>Huidige temperatuur: {{ currentTemp }} graden</p>
-    <p>Gemiddelde temperatuur vandaag: {{ avgToday }} graden</p>
-    <p>Gemiddelde temperatuur gisteren: {{ avgyesterday }} graden</p>
+    <p>Current temperature: {{ currentTemp }} graden</p>
+    <p>Average temperature today: {{ avgToday }} graden</p>
+    <p>Average temperature yesterday: {{ avgyesterday }} graden</p>
     <choose-sensor
       @setSensor="
         (sensor) => {
@@ -58,19 +58,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+
 </style>
  

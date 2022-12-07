@@ -2,7 +2,7 @@
   <div class="container">
       <ul>
         <li><a class="active" href="/">Home</a></li>
-        <li><a href="/daily">Daily</a></li>
+        <li><a href="/daily">Today</a></li>
         <li><a href="/weekly">Weekly</a></li>
         <li><a href="/monthly">Monthly</a></li>
         <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
@@ -14,7 +14,7 @@
  
     <div class="content">
       <router-view />
-  
+
     </div>
   </div>
 </template>

@@ -4,7 +4,6 @@
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
     </option>
-
   </select>
 </div>
 </template>
@@ -44,17 +43,28 @@ export default {
 </script>
 
 <style scoped>
-.dropdown {
-  position: relative;
-  display: inline-block;
+
+div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+select {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  padding: 10px;
+  margin: 10px;
 }
+
+option {
+  font-size: 16px;
+  padding: 10px;
+  margin: 10px;
+}
+
 </style>
