@@ -1,17 +1,6 @@
 <template>
   <div class="content">
-    <div class="info">
       <Visitors class="visitors" />
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-        ultricies, nisl et ultricies aliquet, nisl nisl aliquet nisl, eget
-        aliquet nunc nisl eget nisl. Nulla facilisi. Nulla facilisi. Nulla
-        facilisi. Nulla facilisi. Nulla facilisi. Nulla facilisi. Nulla
-        facilisi. Nulla facilisi. Nulla facilisi. Nulla facilisi. Nulla
-        facilisi. Nulla facilisi. Nulla facilisi. Nulla facilisi. Nulla
-        facilisi. Nulla facilisi. Nulla facilisi. Nulla facilisi. Nulla
-      </p>
-    </div>
 
     <div class="sensor">
       <CurrentTemp />
@@ -45,7 +34,7 @@ export default {
 
 .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   border: 1px solid #ddd;
@@ -55,7 +44,6 @@ export default {
 .info {
   width: 50%;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

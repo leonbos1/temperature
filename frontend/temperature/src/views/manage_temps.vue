@@ -5,9 +5,9 @@
 
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
-      <input v-model="page" />
+      <input @change="getData()" class="page-number" v-model="page" />
       <button @click="nextPage()">Next</button>
-      <button @click="lastPage">Last</button>
+      <button @click="gotoLastPage()">Last</button>
     </div>
     <table>
       <thead>
@@ -204,7 +204,7 @@ export default {
       this.getData();
     },
 
-    lastPage() {
+    gotoLastPage() {
       fetch(
         this.url +
           "/last_page?page=" +
@@ -314,24 +314,15 @@ button {
   width: 100%;
 }
 
-tr {
-  border: 1px solid rgb(109, 109, 109);
-}
-
-td {
-  border: 1px solid rgb(82, 82, 82);
-}
-
 table {
-  border: 1px solid rgb(102, 102, 102);
   border-collapse: collapse;
   width: 100%;
+  border: 1px solid rgb(0, 0, 0);
 }
 
 select {
   width: 100%;
   border: none;
-  border-radius: 4px;
   background-color: #f1f1f1;
   border: 1px solid rgb(0, 0, 0);
 }
@@ -346,6 +337,19 @@ option {
 
 .filters {
   float: left;
+}
+
+.page-number {
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 4px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border: 1px solid rgb(0, 0, 0);
 }
 </style>
  

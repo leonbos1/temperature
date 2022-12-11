@@ -1,10 +1,12 @@
 <template>
   <div class="graph-container">
     <choose-sensor
-    @setSensor="(sensor) => {
-      sensor_id = sensor;
-      this.getData();
-    }"
+      @setSensor="
+        (sensor) => {
+          sensor_id = sensor;
+          this.getData();
+        }
+      "
     />
     <canvas id="weekly-graph"></canvas>
   </div>
