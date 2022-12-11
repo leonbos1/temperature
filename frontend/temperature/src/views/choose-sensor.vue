@@ -1,10 +1,9 @@
 <template>
-<div>
-  <select class="dropdown" @change="$emit('setSensor', this.sensorId)" v-model="sensorId">
+<div class="dropdown">
+  <select class="dropdown-content" @change="$emit('setSensor', this.sensorId)" v-model="sensorId">
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}
     </option>
-
   </select>
 </div>
 </template>
@@ -45,18 +44,27 @@ export default {
 
 <style scoped>
 
-button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
+div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+select {
+  width: 100%;
   height: 50px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  padding: 10px;
+  margin: 10px;
+}
+
+option {
+  font-size: 16px;
+  padding: 10px;
+  margin: 10px;
 }
 
 </style>

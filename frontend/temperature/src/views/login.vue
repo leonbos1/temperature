@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="content">
     <div class="login">
       <form v-on:submit="loginMethod">
         <input type="text" v-model="username" placeholder="Username" />
@@ -51,55 +51,47 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.login {
-  background-color: #18b68e;
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  padding: 50px;
-  width: 20%;
-  height: 30%;
-  border-color: black;
-  border-style: solid;
-  border-radius: 10px;
-  border-width: 2px;
+<style scoped lang="scss">
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 80vw;
 }
 
-.container {
-  height: 300px;
-  position: relative;
+.login {
+  //center
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 40px;
+  margin: 40px;
+  border: 2px solid #ccc;
 }
 
 input {
-  width: 80%;
-  height: 30px;
-  border-radius: 5px;
-  border-color: black;
-  border-style: solid;
-  border-width: 2px;
-  margin-bottom: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 button {
+  width: 100%;
   background-color: #18b68e;
-  border: none;
   color: white;
-  padding: 8px 40px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 10px;
-  border-color: black;
-  border-style: solid;  
-  border-width: 2px;
-  
 }
 </style>
  
