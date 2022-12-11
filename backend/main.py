@@ -27,7 +27,6 @@ class TemperatureModel(db.Model):
     __tablename__ = 'temperatures'
     id = db.Column(db.Integer, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    humidity = db.Column(db.Float(precision=2))
     date = db.Column(db.String)
     time = db.Column(db.String)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
@@ -35,7 +34,6 @@ class TemperatureModel(db.Model):
 temperature_fields = {
     'id': fields.Integer,
     'degrees': fields.Float,
-    'humidity': fields.Float,
     'date': fields.String,
     'time': fields.String,
     'sensor_id': fields.Integer,
@@ -81,13 +79,11 @@ class AverageTemperatures(db.Model):
     __tablename__ = 'average_temperatures'
     date = db.Column(db.String, primary_key=True)
     degrees = db.Column(db.Float(precision=2))
-    humidity = db.Column(db.Float(precision=2))
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
 average_fields = {
     'date': fields.String,
     'degrees': fields.Float,
-    'humidity': fields.Float,
     'sensor_id': fields.Integer,
 }
 
@@ -168,7 +164,6 @@ class Temperature(Resource):
         input_json = request.get_json(force=True)
  
         temp = round(float(input_json['degrees']), 2)
-        humidity = round(float(input_json['humidity']), 2)
         sensor_id = input_json['sensor']
 
         #if json does not have date, this is for manually adding data in management page
@@ -183,7 +178,7 @@ class Temperature(Resource):
             time = input_json['time']
 
 
-        data = TemperatureModel(degrees=temp, date=date, time=time, sensor_id=sensor_id, humidity=humidity)
+        data = TemperatureModel(degrees=temp, date=date, time=time, sensor_id=sensor_id)
         db.session.add(data)
         db.session.commit()
 
@@ -208,7 +203,6 @@ class Temperature(Resource):
         input_json = request.get_json(force=True)
         id = input_json['id']
         degrees = input_json['degrees']
-        humidity = input_json['humidity']
         sensor_id = input_json['sensor_id']
         data = TemperatureModel.query.filter_by(id=id).first()
         if data:
@@ -318,19 +312,15 @@ def daily():
 
     data = []
     temp = 0
-    humidity = 0
     counter = 0
 
     for i in result:
         temp += i.degrees
-        humidity += i.humidity
         counter += 1
         if counter > 15:
             i.degrees = temp/counter
-            i.humidity = humidity/counter
             data.append(i)
             temp = 0
-            humidity = 0
             counter = 0
 
     return data, 200
@@ -364,15 +354,11 @@ def monthly():
 def current_temperature():
     #current temperature is de average of the last 5 entries
     current_temperature = 0
-    current_humidity = 0
     sensor_id = request.args.get('sensor_id', 1, type=int)
     data = TemperatureModel.query.filter_by(sensor_id=sensor_id).order_by(TemperatureModel.id.desc()).limit(5).all()
     for i in data:
-        current_humidity += i.humidity
         current_temperature += i.degrees
-
     current_temperature = current_temperature/5
-    current_humidity = current_humidity/5
 
     try:
         all_temperatures_today = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
@@ -395,7 +381,6 @@ def current_temperature():
 
     data = {
         'current_temp': round(current_temperature, 2),
-        'current_humidity': round(current_humidity, 2),
         'daily_average': round(average_temperature_today, 2),
         'average_yesterday': round(average_temperature_yesteraday, 2)
     }
@@ -404,6 +389,7 @@ def current_temperature():
 
 @app.route('/visitors', methods=['POST'])
 def update_visitors():
+    #TODO fix this
     t = open("visitors.txt","r")
     visitors = t.readlines()[0]
     t.close()
@@ -411,6 +397,7 @@ def update_visitors():
     f = open("visitors.txt","w")
     f.write(str(int(visitors) + 1))
     f.close()
+    #make it return a json atleast
     visit_data = {
         'visitors': int(visitors)+1
     }
@@ -473,4 +460,4 @@ api.add_resource(User, "/user")
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(port=1000, debug=True, threaded=True)
+    app.run(host='192.168.178.69',port=1000, debug=True, threaded=True)
