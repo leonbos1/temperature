@@ -28,15 +28,12 @@ export default {
       data: [],
       dailyData: [],
       temps: [],
+      humidity: [],
       url: datajson["url"],
       sensor_id: 1,
       sensors: [],
       myChart: null,
     };
-  },
-
-  props: {
-    msg: String,
   },
 
   mounted() {
@@ -58,10 +55,13 @@ export default {
 
     setTemps() {
       let temps = [];
+      let humidity = [];
       this.data.forEach((element) => {
         temps.push(element["degrees"]);
+        humidity.push(element["humidity"]);
       });
       this.temps = temps;
+      this.humidity = humidity;
     },
 
     setLabels() {
@@ -98,8 +98,17 @@ export default {
               label: "Temperature",
               data: this.temps,
               fill: false,
+              borderColor: "rgb(255, 0, 0)",
+              tension: 0.1,
+              yAxisID: "temp",
+            },
+            {
+              label: "Humidity",
+              data: this.humidity,
+              fill: false,
               borderColor: "rgb(75, 192, 192)",
               tension: 0.1,
+              yAxisID: "humidity",
             },
           ],
         },
@@ -107,17 +116,29 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Temperatuur van de afgelopen 24 uur",
+              text: "Afgelopen 24 uur",
               font: {
                 size: 32,
               },
             },
           },
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           scales: {
-            y: {
-              beginAtZero: false,
+            temp: {
+              type: "linear",
+              display: true,
+              position: "left",
+            },
+            humidity: {
+              type: "linear",
+              display: true,
+              position: "right",
+            },
+            x: {
+              ticks: {
+                beginAtZero: true,
+              },
             },
           },
         },

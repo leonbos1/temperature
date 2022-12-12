@@ -12,7 +12,9 @@ import jwt
 import string
 import random
 import time
+from time import sleep
 import math
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -472,6 +474,10 @@ api.add_resource(Login, "/login")
 api.add_resource(User, "/user")
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(host='192.168.178.220', port=5000, debug=True, threaded=True)
+    while True:
+        try:
+            with app.app_context():
+                db.create_all()
+            app.run(host="192.168.178.220", port=5000, debug=True, threaded=True)
+        except Exception as e:
+            sleep(10)

@@ -16,3 +16,4 @@ frontend/temperature/dist/js/chunk-vendors.ed9a5caf.js
 frontend/temperature/src/data.json
 backend/data.db
 *.db
+frontend/temperature/src/data.json
