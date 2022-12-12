@@ -23,6 +23,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 db = SQLAlchemy(app)
 
+
 class TemperatureModel(db.Model):
     __tablename__ = 'temperatures'
     id = db.Column(db.Integer, primary_key=True)
@@ -473,4 +474,4 @@ api.add_resource(User, "/user")
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(port=1000, debug=True, threaded=True)
+    app.run(host='192.168.178.220', port=5000, debug=True, threaded=True)

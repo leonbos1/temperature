@@ -1,11 +1,6 @@
 import sqlite3
 from time import sleep
 
-conn = sqlite3.connect('data.db')
-cur = conn.cursor()
-cur.execute("alter table average_temperatures add humidity real")
-conn.commit()
-        
 def main():
     while True:
         conn = sqlite3.connect('data.db')
