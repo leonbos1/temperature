@@ -123,7 +123,7 @@ export default {
             },
           },
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           scales: {
             temp: {
               type: "linear",
