@@ -8,7 +8,7 @@
         }
       "
     />
-    <canvas id="weekly-graph"></canvas>
+    <canvas id="montly-graph"></canvas>
   </div>
 </template>
   
@@ -53,8 +53,10 @@ export default {
 
     setTemps() {
       this.temps = [];
+      this.humidity = [];
       this.data.forEach((element) => {
         this.temps.push(element["degrees"]);
+        this.humidity.push(element["humidity"]);
       });
     },
 
@@ -69,20 +71,30 @@ export default {
       if (this.myChart) {
         this.myChart.destroy();
       }
+      const ctx = document.getElementById("montly-graph");
 
-      const ctx = document.getElementById("weekly-graph");
+      const labels = this.labels;
 
       this.myChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: this.labels,
+          labels: labels,
           datasets: [
             {
               label: "Temperature",
               data: this.temps,
               fill: false,
+              borderColor: "rgb(255, 0, 0)",
+              tension: 0.1,
+              yAxisID: "temp",
+            },
+            {
+              label: "Humidity",
+              data: this.humidity,
+              fill: false,
               borderColor: "rgb(75, 192, 192)",
               tension: 0.1,
+              yAxisID: "humidity",
             },
           ],
         },
@@ -90,17 +102,29 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Temperatuur afgelopen maand",
+              text: "Afgelopen 24 uur",
               font: {
                 size: 32,
               },
             },
           },
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           scales: {
-            y: {
-              beginAtZero: false,
+            temp: {
+              type: "linear",
+              display: true,
+              position: "left",
+            },
+            humidity: {
+              type: "linear",
+              display: true,
+              position: "right",
+            },
+            x: {
+              ticks: {
+                beginAtZero: true,
+              },
             },
           },
         },

@@ -34,10 +34,6 @@ export default {
     };
   },
 
-  props: {
-    msg: String,
-  },
-
   mounted() {
     this.getData();
   },
@@ -57,11 +53,14 @@ export default {
 
     setTemps() {
       let temps = [];
+      let humidity = [];
 
       this.data.forEach((element) => {
         temps.push(element["degrees"]);
+        humidity.push(element["humidity"]);
       });
       this.temps = temps;
+      this.humidity = humidity;
     },
 
     setLabels() {
@@ -77,7 +76,6 @@ export default {
       if (this.myChart) {
         this.myChart.destroy();
       }
-
       const ctx = document.getElementById("weekly-graph");
 
       const labels = this.labels;
@@ -91,8 +89,17 @@ export default {
               label: "Temperature",
               data: this.temps,
               fill: false,
+              borderColor: "rgb(255, 0, 0)",
+              tension: 0.1,
+              yAxisID: "temp",
+            },
+            {
+              label: "Humidity",
+              data: this.humidity,
+              fill: false,
               borderColor: "rgb(75, 192, 192)",
               tension: 0.1,
+              yAxisID: "humidity",
             },
           ],
         },
@@ -100,17 +107,29 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Temperatuur afgelopen week",
+              text: "Afgelopen 24 uur",
               font: {
                 size: 32,
               },
             },
           },
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           scales: {
-            y: {
-              beginAtZero: false,
+            temp: {
+              type: "linear",
+              display: true,
+              position: "left",
+            },
+            humidity: {
+              type: "linear",
+              display: true,
+              position: "right",
+            },
+            x: {
+              ticks: {
+                beginAtZero: true,
+              },
             },
           },
         },
