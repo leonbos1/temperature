@@ -14,6 +14,7 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Temp</th>
+          <th scope="col">Humidity</th>
           <th scope="col">
             <select class="dropdown" @change="changeDate" v-model="date">
               <option value="">All</option>
@@ -41,11 +42,12 @@
       <tbody>
         <tr v-for="d in data" v-bind:key="d">
           <td>{{ d.id }}</td>
-          <input type="text" v-model="d.degrees" />
+          <td><input type="text" v-model="d.degrees" /></td>
+          <td><input type="text" v-model="d.humidity" /></td>
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
           <td>{{ d.sensor_id }}</td>
-          <button @click="editRecord(d.id, d.degrees)" class="edit">
+          <button @click="editRecord(d.id, d.degrees, d.humidity, d.sensor_id)" class="edit">
             Edit
           </button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
@@ -53,6 +55,7 @@
         <tr>
           <td></td>
           <td><input type="text" v-model="newTemp" /></td>
+          <td><input type="text" v-model="newHumidity" /></td>
           <td><input type="text" v-model="newDate" /></td>
           <td><input type="text" v-model="newTime" /></td>
           <td><input type="text" v-model="newSensorId" /></td>
@@ -86,6 +89,7 @@ export default {
       sensors: [],
       date: "",
       newTemp: "",
+      newHumidity: "",
       newDate: "",
       newTime: "",
       newSensorId: 1,
@@ -240,7 +244,7 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, degrees) {
+    editRecord(id, degrees, humidity, sensor_id) {
       fetch(this.url, {
         method: "PUT",
         headers: {
@@ -248,7 +252,9 @@ export default {
         },
         body: JSON.stringify({
           id: id,
-          degrees: degrees + "",
+          degrees: degrees,
+          humidity: humidity,
+          sensor_id: sensor_id,
         }),
       }).then(() => this.getData());
     },
@@ -261,6 +267,8 @@ export default {
         },
         body: JSON.stringify({
           degrees: this.newTemp,
+          humidity: this.newHumidity,
+          sensor: this.newSensorId,
           date: this.newDate,
           time: this.newTime,
         }),
