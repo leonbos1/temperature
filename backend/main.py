@@ -470,7 +470,6 @@ def dates():
 
 @app.route('/sensors')
 @marshal_with(sensor_fields)
-@token_required
 def get_sensors():
     sensors = SensorModel.query.all()
     return sensors, 200
