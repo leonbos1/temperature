@@ -20,7 +20,8 @@ app = Flask(__name__)
 api = Api(app)
 CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
+    os.path.join(basedir, 'data.db')
 app.config['SECRET_KEY'] = 'secretkey'
 regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
 db = SQLAlchemy(app)
@@ -34,6 +35,7 @@ class TemperatureModel(db.Model):
     date = db.Column(db.String)
     time = db.Column(db.String)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
+
 
 temperature_fields = {
     'id': fields.Integer,
@@ -49,6 +51,7 @@ date_fields = {
     'time': fields.String,
 }
 
+
 class UserModel(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -57,12 +60,14 @@ class UserModel(db.Model):
     password = db.Column(db.String)
     last_login = db.Column(db.String)
 
+
 user_fields = {
     'id': fields.Integer,
-    'username': fields.String,	
+    'username': fields.String,
     'password': fields.String,
     'last_login': fields.String,
 }
+
 
 class SensorModel(db.Model):
     __tablename__ = 'sensors'
@@ -72,6 +77,7 @@ class SensorModel(db.Model):
     last_temp = db.Column(db.Float(precision=2))
     last_send = db.Column(db.String)
 
+
 sensor_fields = {
     'id': fields.Integer,
     'name': fields.String,
@@ -80,6 +86,7 @@ sensor_fields = {
     'last_send': fields.String,
 }
 
+
 class AverageTemperatures(db.Model):
     __tablename__ = 'average_temperatures'
     date = db.Column(db.String, primary_key=True)
@@ -87,12 +94,14 @@ class AverageTemperatures(db.Model):
     humidity = db.Column(db.Float(precision=2))
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
+
 average_fields = {
     'date': fields.String,
     'degrees': fields.Float,
     'humidity': fields.Float,
     'sensor_id': fields.Integer,
 }
+
 
 class ExtraModel(db.Model):
     __tablename__ = 'extra'
@@ -105,6 +114,7 @@ class ExtraModel(db.Model):
     date = db.Column(db.String)
     time = db.Column(db.String)
 
+
 extra_fields = {
     'id': fields.Integer,
     'current_temp': fields.Float,
@@ -115,6 +125,7 @@ extra_fields = {
     'date': fields.String,
     'time': fields.String
 }
+
 
 def token_required(f):
     """Decorator yo check token
@@ -132,16 +143,19 @@ def token_required(f):
             return 401
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
+            data = jwt.decode(
+                token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = UserModel.query.filter_by(
+                public_id=data['public_id']).first()
             user = current_user
         except:
             return 401
         return f(current_user, *args, **kwargs)
     return decorator
 
+
 class Temperature(Resource):
-  
+
     @marshal_with(temperature_fields)
     def get(self):
         page = request.args.get('page', 1, type=int)
@@ -149,32 +163,36 @@ class Temperature(Resource):
         date = request.args.get('selected_date', '', type=str)
         sensor_id = request.args.get('sensor_id', 1, type=int)
 
-        #TODO filter by sensor id
+        # TODO filter by sensor id
         if date:
-            data = TemperatureModel.query.paginate(page=page, per_page=per_page)
+            data = TemperatureModel.query.paginate(
+                page=page, per_page=per_page)
             return data.items, 200
-        
+
         if sensor_id:
-            data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+            data = TemperatureModel.query.filter_by(
+                sensor_id=sensor_id).paginate(page=page, per_page=per_page)
             return data.items, 200
 
         if date and sensor_id:
-            data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+            data = TemperatureModel.query.filter_by(
+                sensor_id=sensor_id).paginate(page=page, per_page=per_page)
             print("here")
             return data.items, 200
 
         else:
-            data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
+            data = TemperatureModel.query.filter_by(
+                date=date).paginate(page=page, per_page=per_page)
             return data.items, 200
 
     def post(self):
         input_json = request.get_json(force=True)
- 
+
         temp = round(float(input_json['degrees']), 2)
         humidity = round(float(input_json['humidity']), 2)
         sensor_id = input_json['sensor']
 
-        #if json does not have date, this is for manually adding data in management page
+        # if json does not have date, this is for manually adding data in management page
         if 'date' not in input_json or input_json['date'] == "":
             date = datetime.date.today()
         else:
@@ -185,8 +203,8 @@ class Temperature(Resource):
         else:
             time = input_json['time']
 
-
-        data = TemperatureModel(degrees=temp, date=date, time=time, sensor_id=sensor_id, humidity=humidity)
+        data = TemperatureModel(
+            degrees=temp, date=date, time=time, sensor_id=sensor_id, humidity=humidity)
         db.session.add(data)
         db.session.commit()
 
@@ -216,10 +234,12 @@ class Temperature(Resource):
         data = TemperatureModel.query.filter_by(id=id).first()
         if data:
             data.degrees = degrees
+            data.humidity = humidity
             data.sensor_id = sensor_id
             db.session.commit()
             return "succes", 200
         return "unauthorized", 401
+
 
 @app.route('/last_page', methods=['GET'])
 def pagination():
@@ -229,18 +249,22 @@ def pagination():
     sensor_id = request.args.get('sensor_id', 0, type=int)
 
     data = TemperatureModel.query.paginate(page=page, per_page=per_page)
-    
+
     if date:
-        data = TemperatureModel.query.filter_by(date=date).paginate(page=page, per_page=per_page)
+        data = TemperatureModel.query.filter_by(
+            date=date).paginate(page=page, per_page=per_page)
     if sensor_id:
-        data = TemperatureModel.query.filter_by(sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+        data = TemperatureModel.query.filter_by(
+            sensor_id=sensor_id).paginate(page=page, per_page=per_page)
     if date and sensor_id:
-        data = TemperatureModel.query.filter_by(date=date, sensor_id=sensor_id).paginate(page=page, per_page=per_page)
+        data = TemperatureModel.query.filter_by(
+            date=date, sensor_id=sensor_id).paginate(page=page, per_page=per_page)
 
     p = data.total/per_page
     result = jsonify({'last_page': math.ceil(p)})
     return result, 200
-     
+
+
 class User(Resource):
     def id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
@@ -252,7 +276,7 @@ class User(Resource):
 
         return result
 
-    #@token_required add this when first user is made in production
+    # @token_required add this when first user is made in production
     def post(self):
         """register user
         """
@@ -282,7 +306,7 @@ class User(Resource):
         input_json = request.get_json(force=True)
         id = input_json['id']
         username = input_json['username']
-        password=input_json['password']
+        password = input_json['password']
 
         result = UserModel.query.filter_by(id=id).first()
 
@@ -291,33 +315,37 @@ class User(Resource):
             result.password = password
             db.session.commit()
             return "succes", 200
-            
+
         return "User not found", 404
+
 
 class Login(Resource):
     def post(self):
        # try:
-            input_json = request.get_json(force=True)
-            username = input_json['username']
-            password = input_json['password']
-            user = UserModel.query.filter(UserModel.username==username).first()
+        input_json = request.get_json(force=True)
+        username = input_json['username']
+        password = input_json['password']
+        user = UserModel.query.filter(UserModel.username == username).first()
 
-            if user:
-                if password == user.password:
-                    token = jwt.encode({'public_id': user.public_id}, app.config['SECRET_KEY'], algorithm='HS256')
-                    return jsonify({'token': token, 'user': user.username})
-                return "unauthorized", 401
-            
+        if user:
+            if password == user.password:
+                token = jwt.encode({'public_id': user.public_id},
+                                   app.config['SECRET_KEY'], algorithm='HS256')
+                return jsonify({'token': token, 'user': user.username})
             return "unauthorized", 401
 
-        #except:
-         #   return "unauthorized", 401
+        return "unauthorized", 401
+
+        # except:
+     #   return "unauthorized", 401
+
 
 @app.route('/temperature/daily')
 @marshal_with(temperature_fields)
 def daily():
     sensor_id = request.args.get('sensor_id', 1, type=int)
-    result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
+    result = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(
+        TemperatureModel.date == datetime.date.today()).all()
 
     data = []
     temp = 0
@@ -338,23 +366,28 @@ def daily():
 
     return data, 200
 
+
 @app.route('/checklogin')
 def check_login():
     headers = request.headers
     token = headers['token']
     try:
-        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        data = jwt.decode(
+            token, app.config['SECRET_KEY'], algorithms=['HS256'])
         return "succes", 200
     except:
         return "unauthorized", 401
 
+
 @app.route('/temperature/weekly')
 @marshal_with(average_fields)
 def weekly():
-    #last 7 days
+    # last 7 days
     sensor_id = request.args.get('sensor_id', 1, type=int)
-    data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today() - datetime.timedelta(days=7)).filter_by(sensor_id=sensor_id).all()
+    data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today(
+    ) - datetime.timedelta(days=7)).filter_by(sensor_id=sensor_id).all()
     return data, 200
+
 
 @app.route('/temperature/monthly')
 @marshal_with(average_fields)
@@ -363,13 +396,15 @@ def monthly():
     data = AverageTemperatures.query.filter_by(sensor_id=sensor_id).all()
     return data, 200
 
+
 @app.route('/temperature/current')
 def current_temperature():
-    #current temperature is de average of the last 5 entries
+    # current temperature is de average of the last 5 entries
     current_temperature = 0
     current_humidity = 0
     sensor_id = request.args.get('sensor_id', 1, type=int)
-    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).order_by(TemperatureModel.id.desc()).limit(5).all()
+    data = TemperatureModel.query.filter_by(sensor_id=sensor_id).order_by(
+        TemperatureModel.id.desc()).limit(5).all()
     for i in data:
         current_humidity += i.humidity
         current_temperature += i.degrees
@@ -378,20 +413,24 @@ def current_temperature():
     current_humidity = current_humidity/5
 
     try:
-        all_temperatures_today = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
+        all_temperatures_today = TemperatureModel.query.filter_by(
+            sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today()).all()
         average_temperature_today = 0
         for i in all_temperatures_today:
             average_temperature_today += i.degrees
-        average_temperature_today = average_temperature_today/len(all_temperatures_today)
+        average_temperature_today = average_temperature_today / \
+            len(all_temperatures_today)
 
         average_temperature_yesteraday = 0
-        all_temperatures_yesterday = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(TemperatureModel.date == datetime.date.today() - datetime.timedelta(days=1)).all()
+        all_temperatures_yesterday = TemperatureModel.query.filter_by(sensor_id=sensor_id).filter(
+            TemperatureModel.date == datetime.date.today() - datetime.timedelta(days=1)).all()
         for i in all_temperatures_yesterday:
             average_temperature_yesteraday += i.degrees
-        average_temperature_yesteraday = average_temperature_yesteraday/len(all_temperatures_yesterday)
-    
+        average_temperature_yesteraday = average_temperature_yesteraday / \
+            len(all_temperatures_yesterday)
+
     except:
-        #TODO fix this
+        # TODO fix this
         # currently, if there are no temperatures in the database today/yesterday, the api will crash because of the division by zero
         average_temperature_today = 0
         average_temperature_yesteraday = 0
@@ -402,16 +441,17 @@ def current_temperature():
         'daily_average': round(average_temperature_today, 2),
         'average_yesterday': round(average_temperature_yesteraday, 2)
     }
-    
+
     return data, 200
+
 
 @app.route('/visitors', methods=['POST'])
 def update_visitors():
-    t = open("visitors.txt","r")
+    t = open("visitors.txt", "r")
     visitors = t.readlines()[0]
     t.close()
 
-    f = open("visitors.txt","w")
+    f = open("visitors.txt", "w")
     f.write(str(int(visitors) + 1))
     f.close()
     visit_data = {
@@ -419,19 +459,25 @@ def update_visitors():
     }
     return visit_data, 200
 
+
 @app.route('/dates')
 @marshal_with(date_fields)
 def dates():
-    dates = TemperatureModel.query.with_entities(TemperatureModel.date).distinct().all()
+    dates = TemperatureModel.query.with_entities(
+        TemperatureModel.date).distinct().all()
     return dates, 200
+
 
 @app.route('/sensors')
 @marshal_with(sensor_fields)
+@token_required
 def get_sensors():
     sensors = SensorModel.query.all()
     return sensors, 200
 
+
 @app.route('/sensors', methods=['POST'])
+@token_required
 def add_sensor():
     input_json = request.get_json(force=True)
     name = input_json['name']
@@ -444,7 +490,9 @@ def add_sensor():
     db.session.commit()
     return "succes", 200
 
+
 @app.route('/sensors', methods=['DELETE'])
+@token_required
 def delete_sensor():
     input_json = request.get_json(force=True)
     id = input_json['id']
@@ -455,7 +503,9 @@ def delete_sensor():
         return "succes", 200
     return "Sensor not found", 404
 
+
 @app.route('/sensors', methods=['PUT'])
+@token_required
 def update_sensor():
     input_json = request.get_json(force=True)
     id = input_json['id']
@@ -469,6 +519,7 @@ def update_sensor():
         return "succes", 200
     return "Sensor not found", 404
 
+
 api.add_resource(Temperature, "/")
 api.add_resource(Login, "/login")
 api.add_resource(User, "/user")
@@ -478,6 +529,7 @@ if __name__ == "__main__":
         try:
             with app.app_context():
                 db.create_all()
-            app.run(host="192.168.178.220", port=5000, debug=True, threaded=True)
+            app.run(host="192.168.178.220", port=5000,
+                    debug=True, threaded=True)
         except Exception as e:
             sleep(10)
