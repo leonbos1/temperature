@@ -476,7 +476,7 @@ def get_sensors():
 
 
 @app.route('/sensors', methods=['POST'])
-@token_required
+
 def add_sensor():
     input_json = request.get_json(force=True)
     name = input_json['name']
