@@ -1,13 +1,6 @@
 import sqlite3
 from time import sleep
 
-#where humidity is null
-#make it 0
-conn = sqlite3.connect('data.db')
-cur = conn.cursor()
-cur.execute("UPDATE temperatures SET humidity = 0 WHERE humidity IS NULL")
-conn.commit()
-
 def main():
     while True:
         conn = sqlite3.connect('data.db')
