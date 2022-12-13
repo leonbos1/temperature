@@ -23,7 +23,7 @@ def main():
                 humidity_per_day = {}
 
                 for j in data:
-                    if current_date == j[1]:
+                    if current_date == j[2]:
                         temps.append(j[0])
                         humidity.append(j[1])
                     else:
@@ -37,7 +37,7 @@ def main():
                         humidity_per_day[current_date] = round(sum(humidity) / len(humidity),2)
 
                 for day in temperature_per_day:
-                    cur.execute('INSERT INTO average_temperatures (sensor_id, date, degrees, humidity) VALUES (?,?,?)', (i[0], day, temperature_per_day[day], humidity_per_day[day]))
+                    cur.execute('INSERT INTO average_temperatures (sensor_id, date, degrees, humidity) VALUES (?,?,?,?)', (i[0], day, temperature_per_day[day], humidity_per_day[day]))
 
                 conn.commit()
             sleep(60)
