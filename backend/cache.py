@@ -31,6 +31,7 @@ def main():
                         humidity_per_day[current_date] = round(sum(humidity) / len(humidity),2)
                         current_date = j[2]
                         temps = []
+                        humidity = []
                     if j == data[-1]:
                         temperature_per_day[current_date] = round(sum(temps) / len(temps),2)
                         humidity_per_day[current_date] = round(sum(humidity) / len(humidity),2)
