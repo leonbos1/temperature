@@ -476,8 +476,8 @@ def get_sensors():
 
 
 @app.route('/sensors', methods=['POST'])
-
-def add_sensor():
+@token_required
+def add_sensor(current_user):
     input_json = request.get_json(force=True)
     name = input_json['name']
     location = input_json['location']
@@ -492,7 +492,7 @@ def add_sensor():
 
 @app.route('/sensors', methods=['DELETE'])
 @token_required
-def delete_sensor():
+def delete_sensor(current_user):
     input_json = request.get_json(force=True)
     id = input_json['id']
     sensor = SensorModel.query.filter_by(id=id).first()
@@ -505,7 +505,7 @@ def delete_sensor():
 
 @app.route('/sensors', methods=['PUT'])
 @token_required
-def update_sensor():
+def update_sensor(current_user):
     input_json = request.get_json(force=True)
     id = input_json['id']
     name = input_json['name']
