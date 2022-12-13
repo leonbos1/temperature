@@ -47,7 +47,7 @@
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
           <td>{{ d.sensor_id }}</td>
-          <button @click="editRecord(d.id, d.degrees, d.humidity)" class="edit">
+          <button @click="editRecord(d.id, d.degrees, d.humidity, d.sensor_id)" class="edit">
             Edit
           </button>
           <button @click="deleteRecord(d.id)" class="delete">Delete</button>
@@ -244,7 +244,7 @@ export default {
       }).then(() => this.getData());
     },
 
-    editRecord(id, degrees, humidity) {
+    editRecord(id, degrees, humidity, sensor_id) {
       fetch(this.url, {
         method: "PUT",
         headers: {
@@ -254,6 +254,7 @@ export default {
           id: id,
           degrees: degrees,
           humidity: humidity,
+          sensor_id: sensor_id,
         }),
       }).then(() => this.getData());
     },
@@ -267,6 +268,7 @@ export default {
         body: JSON.stringify({
           degrees: this.newTemp,
           humidity: this.newHumidity,
+          sensor: this.newSensorId,
           date: this.newDate,
           time: this.newTime,
         }),
