@@ -14,7 +14,6 @@
  
     <div class="content">
       <router-view />
-
     </div>
   </div>
 </template>
@@ -85,6 +84,7 @@ export default {
 @media (min-width: 480px) {
   .content {
     width: 80%;
+    
   }
 }
 
@@ -123,7 +123,6 @@ body, html {
 }
 
 .right {
-  position: absolute;
   right: 0;
   top: 0;
 }
