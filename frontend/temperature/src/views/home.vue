@@ -1,9 +1,8 @@
 <template>
   <div class="content">
-    <div class="inner">
       <Visitors class="visitors" />
 
-   
+    <div class="sensor">
       <CurrentTemp />
     </div>
   </div>
@@ -32,34 +31,29 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+
 .content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  text-align: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.inner {
-  margin-top: 20vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: center;
   align-items: center;
   border: 1px solid #ddd;
   padding: 20px;
 }
 
-@media screen and (max-width: 500px) {
-  .content {
-    max-width: 80vw;
-  }
-
-  .inner {
-    margin-top: 30vh;
-  }
+.info {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.sensor {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 </style>
  

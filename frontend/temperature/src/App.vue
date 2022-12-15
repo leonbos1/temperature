@@ -93,9 +93,8 @@ ul {
   padding: 0;
   overflow: hidden;
   background-color: #272727;
-  position: absolute;
+  position: relative;
   margin-top: 0;
-  width: 100%;
   
 }
 
