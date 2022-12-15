@@ -107,14 +107,14 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Afgelopen 24 uur",
+              text: "Today",
               font: {
                 size: 32,
               },
             },
           },
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           scales: {
             temp: {
               type: "linear",

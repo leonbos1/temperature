@@ -116,7 +116,7 @@ export default {
           plugins: {
             title: {
               display: true,
-              text: "Afgelopen 24 uur",
+              text: "Past 24 Hours",
               font: {
                 size: 32,
               },
