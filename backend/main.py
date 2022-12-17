@@ -163,26 +163,26 @@ class Temperature(Resource):
         date = request.args.get('selected_date', '', type=str)
         sensor_id = request.args.get('sensor_id', 1, type=int)
 
-        # TODO filter by sensor id
-        if date:
-            data = TemperatureModel.query.paginate(
+        #TODO make this better
+
+        if date and not sensor_id:
+            data = TemperatureModel.query.filter_by(date=date).paginate(
                 page=page, per_page=per_page)
             return data.items, 200
 
-        if sensor_id:
+        if sensor_id and not date:
             data = TemperatureModel.query.filter_by(
                 sensor_id=sensor_id).paginate(page=page, per_page=per_page)
             return data.items, 200
 
         if date and sensor_id:
             data = TemperatureModel.query.filter_by(
-                sensor_id=sensor_id).paginate(page=page, per_page=per_page)
-            print("here")
+                sensor_id=sensor_id, date=date).paginate(page=page, per_page=per_page)
             return data.items, 200
 
         else:
-            data = TemperatureModel.query.filter_by(
-                date=date).paginate(page=page, per_page=per_page)
+            data = TemperatureModel.query.paginate(
+                page=page, per_page=per_page)
             return data.items, 200
 
     def post(self):

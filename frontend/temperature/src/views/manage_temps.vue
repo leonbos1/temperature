@@ -17,7 +17,7 @@
           <th scope="col">Humidity</th>
           <th scope="col">
             <select class="dropdown" @change="changeDate" v-model="date">
-              <option value="">All</option>
+              <option value="">Date</option>
               <option v-for="date in dates" :key="date" :value="date">
                 {{ date }}
               </option>
@@ -26,7 +26,7 @@
           <th scope="col">Time</th>
           <th scope="col">
             <select class="dropdown" @change="changeSensor" v-model="sensor_id">
-              <option value="">All</option>
+              <option value="">Sensor</option>
               <option
                 v-for="sensor in sensors"
                 :key="sensor.id"
@@ -83,7 +83,7 @@ export default {
       data: [],
       page: 1,
       perPage: 50,
-      sensor_id: 1,
+      sensor_id: "",
       url: datajson["url"],
       dates: [],
       sensors: [],
@@ -330,9 +330,10 @@ table {
 
 select {
   width: 100%;
+  padding: 16px 20px;
   border: none;
+  border-radius: 4px;
   background-color: #f1f1f1;
-  border: 1px solid rgb(0, 0, 0);
 }
 
 option {
