@@ -161,7 +161,7 @@ class Temperature(Resource):
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 1, type=int)
         date = request.args.get('selected_date', '', type=str)
-        sensor_id = request.args.get('sensor_id', 1, type=int)
+        sensor_id = request.args.get('sensor_id', 0, type=int)
 
         #TODO make this better
 
