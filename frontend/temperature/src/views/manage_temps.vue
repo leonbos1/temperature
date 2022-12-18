@@ -1,8 +1,6 @@
 <template>
-  <div class="content">
+  <div class="inner">
     <div class="page">
-      <div class="filter"></div>
-
       <button @click="firstPage">First</button>
       <button @click="prevPage">Previous</button>
       <input @change="getData()" class="page-number" v-model="page" />
@@ -280,16 +278,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.content {
-  margin: 0 auto;
-  width: 100%;
-  padding: 20px;
-  text-align: center;
-  border: 1px solid rgb(0, 0, 0);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+
+.inner {
+  overflow: auto;
+  white-space: nowrap;
 }
 
 button {
@@ -315,17 +307,19 @@ button {
   background-color: #2196f3;
 }
 
-.page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 table {
   border-collapse: collapse;
   width: 100%;
-  border: 1px solid rgb(0, 0, 0);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
 select {
