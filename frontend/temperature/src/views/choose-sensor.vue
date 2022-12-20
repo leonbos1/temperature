@@ -1,5 +1,6 @@
 <template>
 <div class="dropdown">
+  <font-awesome-icon icon="location-dot" />
   <select class="dropdown-content" @change="$emit('setSensor', this.sensorId)" v-model="sensorId">
     <option v-for="sensor in sensors" :key="sensor.id" :value="sensor.id">
       {{ sensor.location }}

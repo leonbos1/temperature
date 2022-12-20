@@ -2,11 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ManageTemps from '../views/manage_temps.vue'
 import ManageUsers from '../views/manage_users.vue'
 import Home from '../views/home.vue'
-import Login from '../views/login.vue'
-import Daily from '../views/daily-graph.vue'	
-import Weekly from '../views/weekly-graph.vue'	
-import Monthly from '../views/monthly-graph.vue'	
+import Login from '../views/login.vue'	
 import ManageSensors from '../views/manage-sensors.vue'
+import graph from '../views/graph.vue'
+
 const routes = [
     {
         path: '/',
@@ -14,19 +13,9 @@ const routes = [
         component: Home
     },
     {
-        path: '/daily',
-        name: 'Daily',
-        component: Daily
-    },
-    {
-        path: '/weekly',
-        name: 'Weekly',
-        component: Weekly
-    },
-    {
-        path: '/monthly',
-        name: 'Monthly',
-        component: Monthly
+        path: '/graphs',
+        name: 'graphs',
+        component: graph
     },
     {
         path: '/managetemps',

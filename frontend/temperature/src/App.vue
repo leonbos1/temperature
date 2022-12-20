@@ -4,9 +4,7 @@
       <li>
         <a class="active" href="/"><font-awesome-icon icon="house" /></a>
       </li>
-      <li><a href="/daily">Today</a></li>
-      <li><a href="/weekly">Weekly</a></li>
-      <li><a href="/monthly">Monthly</a></li>
+      <li><a href="/graphs">Graphs</a></li>
       <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
       <li v-if="loggedIn"><a href="/manageusers">Manage users</a></li>
       <li v-if="loggedIn"><a href="/managesensors">Manage sensors</a></li>
