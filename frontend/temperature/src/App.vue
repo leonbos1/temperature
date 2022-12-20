@@ -1,17 +1,21 @@
 <template>
   <div class="container">
-      <ul>
-        <li><a class="active" href="/">Home</a></li>
-        <li><a href="/daily">Today</a></li>
-        <li><a href="/weekly">Weekly</a></li>
-        <li><a href="/monthly">Monthly</a></li>
-        <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
-        <li v-if="loggedIn"><a href="/manageusers">Manage users</a></li>
-        <li v-if="loggedIn"><a href="/managesensors">Manage sensors</a></li>
-        <li class="right" v-if="!loggedIn"><a href="/login">Login</a></li>
-        <li class="right" v-if="loggedIn" @click="logout"><a>Logout</a></li>
-      </ul>
- 
+    <ul>
+      <li>
+        <a class="active" href="/"><font-awesome-icon icon="house" /></a>
+      </li>
+      <li><a href="/daily">Today</a></li>
+      <li><a href="/weekly">Weekly</a></li>
+      <li><a href="/monthly">Monthly</a></li>
+      <li v-if="loggedIn"><a href="/managetemps">Manage temps</a></li>
+      <li v-if="loggedIn"><a href="/manageusers">Manage users</a></li>
+      <li v-if="loggedIn"><a href="/managesensors">Manage sensors</a></li>
+      <li class="right" v-if="!loggedIn"><a href="/login">Login</a></li>
+      <li class="right" v-if="loggedIn" @click="logout">
+        <a><font-awesome-icon icon="right-from-bracket" /></a>
+      </li>
+    </ul>
+
     <div class="content">
       <router-view />
     </div>
@@ -19,7 +23,6 @@
 </template>
 
 <script>
- 
 import datajson from "./data.json";
 
 export default {
@@ -27,7 +30,7 @@ export default {
   data: function () {
     return {
       loggedIn: false,
-      url: datajson['url'],
+      url: datajson["url"],
     };
   },
   mounted() {
@@ -38,16 +41,13 @@ export default {
       fetch(this.url + "/checklogin", {
         method: "GET",
         headers: { token: localStorage.getItem("token") },
-      })
-        .then((data) => {
-          if (data.status == 200) {
-            this.loggedIn = true;
-
-          } else {
-            this.loggedIn = false;
-          }
-        });
-
+      }).then((data) => {
+        if (data.status == 200) {
+          this.loggedIn = true;
+        } else {
+          this.loggedIn = false;
+        }
+      });
     },
     logout() {
       localStorage.removeItem("token");
@@ -84,7 +84,6 @@ export default {
 @media (min-width: 480px) {
   .content {
     width: 80%;
-    
   }
 }
 
@@ -95,7 +94,6 @@ ul {
   background-color: #272727;
   position: relative;
   margin-top: 0;
-  
 }
 
 li {
@@ -118,8 +116,9 @@ li a:hover:not(.active) {
   background-color: #18b68e;
 }
 
-body, html {
-    margin:0;
+body,
+html {
+  margin: 0;
 }
 
 .right {
