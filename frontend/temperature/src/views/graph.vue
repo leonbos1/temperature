@@ -241,14 +241,14 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 10vh;
+  margin-top: 12vh;
 }
 
 .graph-buttons {
   border: 1px solid black;
   border-radius: 5px;
   padding: 10px;
-  width: 50vw;
+  width: 60vw;
 }
 
 .graph-button {
