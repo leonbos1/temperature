@@ -17,3 +17,4 @@ frontend/temperature/src/data.json
 backend/data.db
 *.db
 frontend/temperature/src/data.json
+frontend/temperature/package-lock.json

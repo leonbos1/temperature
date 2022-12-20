@@ -1,11 +1,19 @@
 <template>
   <div class="inner">
     <div class="page">
-      <button @click="firstPage">First</button>
-      <button @click="prevPage">Previous</button>
+      <button class="paginate" @click="firstPage">
+        <font-awesome-icon icon="angles-left" />
+      </button>
+      <button class="paginate" @click="prevPage">
+        <font-awesome-icon icon="chevron-left" />
+      </button>
       <input @change="getData()" class="page-number" v-model="page" />
-      <button @click="nextPage()">Next</button>
-      <button @click="gotoLastPage()">Last</button>
+      <button class="paginate" @click="nextPage()">
+        <font-awesome-icon icon="chevron-right" />
+      </button>
+      <button class="paginate" @click="gotoLastPage()">
+        <font-awesome-icon icon="angles-right" />
+      </button>
     </div>
     <table>
       <thead>
@@ -45,10 +53,15 @@
           <td>{{ d.date }}</td>
           <td>{{ d.time }}</td>
           <td>{{ d.sensor_id }}</td>
-          <button @click="editRecord(d.id, d.degrees, d.humidity, d.sensor_id)" class="edit">
-            Edit
+          <button
+            @click="editRecord(d.id, d.degrees, d.humidity, d.sensor_id)"
+            class="edit"
+          >
+            <font-awesome-icon icon="pen" />
           </button>
-          <button @click="deleteRecord(d.id)" class="delete">Delete</button>
+          <button @click="deleteRecord(d.id)" class="delete">
+            <font-awesome-icon icon="trash-can" />
+          </button>
         </tr>
         <tr>
           <td></td>
@@ -61,6 +74,21 @@
         </tr>
       </tbody>
     </table>
+    <div class="page">
+      <button class="paginate" @click="firstPage">
+        <font-awesome-icon icon="angles-left" />
+      </button>
+      <button class="paginate" @click="prevPage">
+        <font-awesome-icon icon="chevron-left" />
+      </button>
+      <input @change="getData()" class="page-number" v-model="page" />
+      <button class="paginate" @click="nextPage()">
+        <font-awesome-icon icon="chevron-right" />
+      </button>
+      <button class="paginate" @click="gotoLastPage()">
+        <font-awesome-icon icon="angles-right" />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -278,10 +306,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.page {
+  border-bottom: 1px solid rgb(0, 0, 0);
+  margin-bottom: 1vh;
+}
 
 .inner {
   overflow: auto;
   white-space: nowrap;
+  border: 1px solid rgb(0, 0, 0);
 }
 
 button {
@@ -297,6 +330,13 @@ button {
   border: 1px solid rgb(0, 0, 0);
 }
 
+.paginate {
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  padding: 8px;
+}
+
 .delete {
   background-color: #f44336;
 }
@@ -310,6 +350,7 @@ button {
 table {
   border-collapse: collapse;
   width: 100%;
+  border-bottom: 1px solid rgb(0, 0, 0);
 }
 
 th,
