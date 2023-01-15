@@ -9,7 +9,7 @@ def main():
 
         #write to test.txt
         f = open("test.txt", "w")
-        f.write("lalala")
+        f.write("test123")
         f.close()
 
         try:
