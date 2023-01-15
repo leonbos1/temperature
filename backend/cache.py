@@ -8,6 +8,7 @@ def main():
         cur.execute("DELETE FROM average_temperatures")
         conn.commit()
         try:
+            remove_old_data()
             sensors = cur.execute('SELECT id FROM sensors').fetchall()
 
             for i in sensors:
@@ -43,6 +44,14 @@ def main():
             sleep(60)
         except:
             sleep(60)
+
+def remove_old_data():
+    """Removes data older than 50 days
+    """
+    conn = sqlite3.connect('data.db')
+    cur = conn.cursor()
+    cur.execute("DELETE FROM temperatures WHERE date < date('now', '-50 days')")
+    conn.commit()
 
 if __name__ == "__main__":
     main()
