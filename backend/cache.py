@@ -13,6 +13,7 @@ def main():
 
             for i in sensors:
                 data = cur.execute('SELECT degrees, humidity, date, time FROM temperatures WHERE sensor_id = ? ORDER BY date desc', (i[0],)).fetchall()
+
                 #print(data)
                 data = data[::-1]
 
@@ -50,7 +51,7 @@ def remove_old_data():
     """
     conn = sqlite3.connect('data.db')
     cur = conn.cursor()
-    cur.execute("DELETE FROM temperatures WHERE date < date('now', '-50 days')")
+    cur.execute("DELETE FROM temperatures WHERE date < date('now', '-30 days')")
     conn.commit()
 
 if __name__ == "__main__":
