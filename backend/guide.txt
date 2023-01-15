@@ -1,0 +1,7 @@
+How to update cache file:
+    ssh pi@leonbos.nl
+    enther password
+
+    cd home/pi/Desktop/temp-app/temperature
+    git pull
+    sudo systemctl restart cache.service

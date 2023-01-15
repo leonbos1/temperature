@@ -7,11 +7,6 @@ def main():
         cur.execute("DELETE FROM average_temperatures")
         conn.commit()
 
-        #write to test.txt
-        f = open("test.txt", "w")
-        f.write("test123")
-        f.close()
-
         try:
             sensors = cur.execute('SELECT id FROM sensors').fetchall()
 
