@@ -6,10 +6,10 @@ def main():
         cur = conn.cursor()
         cur.execute("DELETE FROM average_temperatures")
         conn.commit()
-        
+
         #write to test.txt
         f = open("test.txt", "w")
-        f.write("test")
+        f.write("lalala")
         f.close()
 
         try:
