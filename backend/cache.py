@@ -47,7 +47,7 @@ def main():
             sleep(60)
 
 def remove_old_data():
-    """Removes data older than 50 days
+    """Removes data older than 30 days
     """
     conn = sqlite3.connect('data.db')
     cur = conn.cursor()

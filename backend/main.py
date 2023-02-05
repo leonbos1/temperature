@@ -386,6 +386,8 @@ def weekly():
     sensor_id = request.args.get('sensor_id', 1, type=int)
     data = AverageTemperatures.query.filter(AverageTemperatures.date >= datetime.date.today(
     ) - datetime.timedelta(days=7)).filter_by(sensor_id=sensor_id).all()
+    print(data)
+    print(sensor_id)
     return data, 200
 
 
