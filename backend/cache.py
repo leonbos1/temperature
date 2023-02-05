@@ -13,8 +13,6 @@ def main():
 
             for i in sensors:
                 data = cur.execute('SELECT degrees, humidity, date, time FROM temperatures WHERE sensor_id = ? ORDER BY date desc', (i[0],)).fetchall()
-
-                #print(data)
                 data = data[::-1]
 
                 current_date = data[0][2]
