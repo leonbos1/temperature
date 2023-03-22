@@ -10,7 +10,7 @@
         graphNumber="1"
       />
       <small-graph
-        graphTitle="Weekly"
+        graphTitle="This Week"
         :temps="weeklyTemps"
         v-if="weeklyLoaded"
         :humidity="weeklyHumidity"
@@ -18,7 +18,7 @@
         graphNumber="2"
       />
       <small-graph
-        graphTitle="Monthly"
+        graphTitle="This Month"
         :temps="monthlyTemps"
         v-if="monthlyLoaded"
         :humidity="monthlyHumidity"
@@ -54,13 +54,24 @@ export default {
       monthlyLabels: [],
       monthlyLoaded: false,
       url: datajson["url"],
-      sensor_id: 1,
       sensors: [],
       myChart: null,
       graphTitle: "Daily Temperature",
       graphType: "daily",
-      
     };
+  },
+
+  props: {
+    sensor_id: {
+      type: Number,
+      default: 1,
+    },
+  },
+
+  watch: {
+    sensor_id: function () {
+      this.getData();
+    },
   },
 
   components: {
@@ -68,12 +79,54 @@ export default {
   },
 
   mounted() {
-    this.getDailyData();
-    this.getWeeklyData();
-    this.getMonthlyData();
+    if (this.checkCache) {
+      console.log("Cache not found");
+      this.getData();
+    }
   },
 
   methods: {
+    getData() {
+      this.getDailyData();
+      this.getWeeklyData();
+      this.getMonthlyData();
+      this.cacheData();
+    },
+
+    checkCache() {
+      if (localStorage.getItem("cacheTime") < Date.now() ) {
+        return false;
+      }
+      if (localStorage.getItem("dailyData") == null) {
+        return false;
+      } else if (localStorage.getItem("weeklyData") == null) {
+        return false;
+      } else if (localStorage.getItem("monthlyData") == null) {
+        return false;
+      } else {
+        this.dailyData = JSON.parse(localStorage.getItem("dailyData"));
+        this.weeklyData = JSON.parse(localStorage.getItem("weeklyData"));
+        this.monthlyData = JSON.parse(localStorage.getItem("monthlyData"));
+        this.setDailyTemps();
+        this.setDailyLabels();
+        this.setWeeklyTemps();
+        this.setWeeklyLabels();
+        this.setMonthlyTemps();
+        this.setMonthlyLabels();
+        this.dailyLoaded = true;
+        this.weeklyLoaded = true;
+        this.monthlyLoaded = true;
+        return true;
+      }
+    },
+
+    cacheData() {
+      localStorage.setItem("dailyData", JSON.stringify(this.dailyData));
+      localStorage.setItem("weeklyData", JSON.stringify(this.weeklyData));
+      localStorage.setItem("monthlyData", JSON.stringify(this.monthlyData));
+      localStorage.setItem("cacheTime", Date.now() + 600000);
+    },
+
     getDailyData() {
       fetch(this.url + "/temperature/daily?sensor_id=" + this.sensor_id, {
         method: "GET",
@@ -131,7 +184,7 @@ export default {
     setWeeklyLabels() {
       let labels = [];
       this.weeklyData.forEach((element) => {
-        labels.push(element["time"]);
+        labels.push(element["date"]);
       });
       this.weeklyLabels = labels;
     },
@@ -162,7 +215,7 @@ export default {
     setMonthlyLabels() {
       let labels = [];
       this.monthlyData.forEach((element) => {
-        labels.push(element["time"]);
+        labels.push(element["date"]);
       });
       this.monthlyLabels = labels;
     },

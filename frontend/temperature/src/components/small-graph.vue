@@ -5,25 +5,25 @@
     <div
       class="relative bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 shadow-lg mt-12"
     >
-      <div style="min-height: 235px">
+     
         <div class="h-72">
           <canvas
             class="-translate-y-10"
             :id="'graph-canvas-' + graphNumber"
           ></canvas>
-        </div>
+   
       </div>
     </div>
     <div class="p-6">
       <h6
         class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-blue-gray-900"
       >
-        Website View
+        {{ graphTitle }}
       </h6>
       <p
         class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600"
       >
-        Last Campaign Performance
+    
       </p>
     </div>
     <div class="p-6 border-t border-blue-gray-50 px-6 py-5">
@@ -75,6 +75,14 @@ export default {
     this.createGraph();
   },
 
+  watch: {
+    temps: function () {
+      setTimeout(() => {
+        this.createGraph();
+      }, 100);
+    },
+  },
+
   methods: {
     createGraph() {
       if (this.myChart) {
@@ -115,7 +123,7 @@ export default {
               display: true,
               text: this.graphTitle,
               font: {
-                size: 32,
+                size: 20,
               },
             },
           },
