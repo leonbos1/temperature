@@ -20,6 +20,7 @@
 
     <card-row :sensor_id="sensor_id" />
     <graph-row :sensor_id="sensor_id" />
+  </div>
 </template>
 
 <script>
