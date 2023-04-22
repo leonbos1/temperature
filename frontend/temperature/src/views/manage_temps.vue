@@ -1,5 +1,5 @@
 <template>
-  <div class="inner">
+  <div class="p-4 xl:ml-80">
     <div class="page">
       <button class="paginate" @click="firstPage">
         <font-awesome-icon icon="angles-left" />
