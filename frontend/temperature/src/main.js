@@ -4,7 +4,6 @@ import router from './router'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faChevronRight, faChevronLeft, faAnglesRight, faAnglesLeft, faHouse, faRightFromBracket, faTrashCan, faPen, faCalendarDays, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import '@/assets/css/tailwind.css'
 
 
 library.add(
