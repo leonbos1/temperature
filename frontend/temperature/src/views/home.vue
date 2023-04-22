@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
   <div class="mt-12">
     <div class="p-4 xl:ml-80">
       <div class="">
@@ -21,23 +20,9 @@
 
     <card-row :sensor_id="sensor_id" />
     <graph-row :sensor_id="sensor_id" />
-=======
-  <div class="content">
-      <Visitors class="visitors" />
-      <CurrentTemp />
->>>>>>> parent of aa8562a (frontend updates)
-  </div>
 </template>
 
 <script>
-<<<<<<< HEAD
-import CardRow from "../components/card-row.vue";
-import GraphRow from "../components/graph-row.vue";
-import datajson from "../data.json";
-=======
-import CurrentTemp from "./current-temp.vue";
-import Visitors from "./visitors.vue";
->>>>>>> parent of aa8562a (frontend updates)
 
 export default {
   name: "HomePage",
