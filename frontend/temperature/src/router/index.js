@@ -5,30 +5,12 @@ import Home from '../views/home.vue'
 import Login from '../views/login.vue'	
 import ManageSensors from '../views/manage-sensors.vue'
 import graph from '../views/graph.vue'
-import day from '../views/day.vue'
-import week from '../views/week.vue'
-import month from '../views/month.vue'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
         component: Home
-    },
-    {
-        path: '/day',
-        name: 'day',
-        component: day
-    },
-    {
-        path: '/week',
-        name: 'week',
-        component: week
-    },
-    {
-        path: '/month',
-        name: 'month',
-        component: month
     },
     {
         path: '/graphs',
