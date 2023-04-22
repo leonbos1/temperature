@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 xl:ml-80 h-3/4 absolute w-full max-w-5xl mx-auto">
+  <div class="graph-container">
     <div class="graph-buttons">
       <choose-sensor
         @setSensor="
